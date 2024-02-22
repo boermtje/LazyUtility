@@ -29,6 +29,8 @@ public class SkeletonScript extends LoopingScript {
     private boolean someBool = true;
     private Random random = new Random();
 
+
+    /////////////////////////////////////Botstate//////////////////////////
     enum BotState {
         //define your own states here
         IDLE,
@@ -37,6 +39,9 @@ public class SkeletonScript extends LoopingScript {
         //...
     }
 
+
+
+    /////////////////////////////////////ChatMessage Stunned + No Food//////////////////////////
     public SkeletonScript(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(s, scriptConfig, scriptDefinition);
         this.sgc = new SkeletonScriptGraphicsContext(getConsole(), this);
@@ -65,6 +70,8 @@ public class SkeletonScript extends LoopingScript {
             Execution.delay(random.nextLong(3000,7000));
             return;
         }
+
+        /////////////////////////////////////Botstate//////////////////////////
         switch (botState) {
             case IDLE -> {
                 //do nothing
@@ -81,12 +88,13 @@ public class SkeletonScript extends LoopingScript {
         }
     }
 
+    ///////////////////////Health Percentage Calculator/////////////////////////////
     public boolean shouldEat(LocalPlayer player) {
         double healthPercentage = ((double) player.getCurrentHealth() / player.getMaximumHealth()) * 100;
         return healthPercentage < 40;
     }
 
-
+    /////////////////////Skilling + Eating + Backpack Full = Idle////////////////////////
     private long handleSkilling(LocalPlayer player) {
         //for example, if skilling progress interface is open, return a randomized value to keep waiting.
         if (Interfaces.isOpen(1251))
@@ -97,14 +105,14 @@ public class SkeletonScript extends LoopingScript {
             botState = BotState.IDLE;
             return random.nextLong(250, 1500);
         }
-
-// Elsewhere in your code, where you want to check if the player should eat
+        // Elsewhere in your code, where you want to check if the player should eat
         if (shouldEat(player)) {
             ActionBar.useAbility("Eat Food");
             println("Eating");
         }
 
-        //click my tree, mine my rock, etc...
+
+        /////////////////Pickpocketing Tourist/////////////////
         Npc GullibleTourist = NpcQuery.newQuery().id(36512).option("Pickpocket").results().first();
         if (GullibleTourist != null) {
             if (player.getAnimationId() == -1) {
@@ -121,6 +129,9 @@ public class SkeletonScript extends LoopingScript {
         }
         return random.nextLong(1500,3000);
     }
+
+
+    /////////////////STATISTICS////////////////////
     //XP Gain & Level Gain base is set to zero,
     private int xpGained = 0;
     private int levelsGained = 0;
@@ -184,6 +195,9 @@ public class SkeletonScript extends LoopingScript {
         return xpGained + " XP";
     }
 
+
+
+    ////////////////////Botstate/////////////////////
     public BotState getBotState() {
         return botState;
     }
