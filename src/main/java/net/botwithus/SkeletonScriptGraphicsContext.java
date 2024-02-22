@@ -37,10 +37,11 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                     ImGui.EndTabItem();
                 }
                 if (ImGui.BeginTabItem("Stats", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("XP/HR: " + script.xpPerHour());
+                    ImGui.Text("Time Passed: " + script.timePassed());
                     ImGui.Text("TTL: " + script.ttl());
                     ImGui.Text("XP Gained: " + script.xpGained());
                     ImGui.Text("Levels Gained: " + script.levelsGained());
+                    ImGui.Text("XP/HR: " + script.xpPerHour());
                     ImGui.EndTabItem();
                 }
                 ImGui.EndTabBar();

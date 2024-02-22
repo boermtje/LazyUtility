@@ -171,6 +171,15 @@ public class SkeletonScript extends LoopingScript {
         return "N/A";
     }
 
+    public String timePassed() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedMillis = currentTime - startTime;
+        long hours = elapsedMillis / 3600000;
+        long minutes = (elapsedMillis % 3600000) / 60000;
+        long seconds = (elapsedMillis % 60000) / 1000;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
     public String xpGained() {
         return xpGained + " XP";
     }
