@@ -40,6 +40,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                     ImGui.Text("XP/HR: " + script.xpPerHour());
                     ImGui.Text("TTL: " + script.ttl());
                     ImGui.Text("XP Gained: " + script.xpGained());
+                    ImGui.Text("Levels Gained: " + script.levelsGained());
                     ImGui.EndTabItem();
                 }
                 ImGui.EndTabBar();

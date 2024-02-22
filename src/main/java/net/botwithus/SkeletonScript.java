@@ -29,18 +29,6 @@ public class SkeletonScript extends LoopingScript {
     private boolean someBool = true;
     private Random random = new Random();
 
-    public String xpPerHour() {
-        return null;
-    }
-
-    public String ttl() {
-        return null;
-    }
-
-    public String xpGained() {
-        return null;
-    }
-
     enum BotState {
         //define your own states here
         IDLE,
@@ -143,28 +131,44 @@ public class SkeletonScript extends LoopingScript {
     //XP Gain & Level Gain is calculated and added to base
     @Override
     public boolean initialize() {
-        // Subscribe to the SkillUpdateEvent
         startTime = System.currentTimeMillis();
+        xpGained = 0;
+        levelsGained = 0;
+
         subscribe(SkillUpdateEvent.class, skillUpdateEvent -> {
             if (skillUpdateEvent.getId() == Skills.THIEVING.getId()) {
                 xpGained += (skillUpdateEvent.getExperience() - skillUpdateEvent.getOldExperience());
-                if (skillUpdateEvent.getOldActualLevel() < skillUpdateEvent.getActualLevel())
+                if (skillUpdateEvent.getOldActualLevel() < skillUpdateEvent.getActualLevel()) {
                     levelsGained++;
+                }
             }
         });
 
-        long currentTime = System.currentTimeMillis() - startTime;
-        xpPerHour = (int) (Math.round((3600.0 / currentTime) * xpGained));
-        if (xpPerHour != 0) {
-            int totalSeconds = (Skills.THIEVING.getExperienceToNextLevel() * 3600) / xpPerHour;
+        return super.initialize();
+    }
+
+    public String xpPerHour() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime > startTime) {
+            xpPerHour = (int) (xpGained * 3600000.0 / (currentTime - startTime));
+        }
+        return xpPerHour + " XP/hr";
+    }
+
+    public String ttl() {
+        if (xpPerHour > 0) {
+            int xpToNextLevel = Skills.THIEVING.getExperienceToNextLevel();
+            int totalSeconds = (int) (xpToNextLevel * 3600.0 / xpPerHour);
             int hours = totalSeconds / 3600;
             int minutes = (totalSeconds % 3600) / 60;
             int seconds = totalSeconds % 60;
-            // Format the time to level
-            ttl = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
         }
+        return "N/A";
+    }
 
-        return false;
+    public String xpGained() {
+        return xpGained + " XP";
     }
 
     public BotState getBotState() {
