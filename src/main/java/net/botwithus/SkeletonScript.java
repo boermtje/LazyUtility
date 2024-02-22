@@ -55,11 +55,14 @@ public class SkeletonScript extends LoopingScript {
 
         // Subscribe to ChatMessageEvent
         subscribe(ChatMessageEvent.class, chatMessageEvent -> {
+            // Idles when stunned
             if (chatMessageEvent.getMessage().contains("stunned")) {
                 Execution.delay(4000); // Idle for 4 seconds
                 println("Got hit, Idle");
-            } else {
-                println("Chat message received: %s", chatMessageEvent.getMessage());
+            }
+            else if (chatMessageEvent.getMessage().contains("No edible food could")) {
+                botState = BotState.IDLE;
+                println("No Food - Going IDLE");
             }
         });
     }
@@ -153,7 +156,7 @@ public class SkeletonScript extends LoopingScript {
         long currentTime = System.currentTimeMillis() - startTime;
         xpPerHour = (int) (Math.round((3600.0 / currentTime) * xpGained));
         if (xpPerHour != 0) {
-            int totalSeconds = (Skills.WOODCUTTING.getExperienceToNextLevel() * 3600) / xpPerHour;
+            int totalSeconds = (Skills.THIEVING.getExperienceToNextLevel() * 3600) / xpPerHour;
             int hours = totalSeconds / 3600;
             int minutes = (totalSeconds % 3600) / 60;
             int seconds = totalSeconds % 60;
