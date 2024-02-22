@@ -147,6 +147,10 @@ public class SkeletonScript extends LoopingScript {
         return super.initialize();
     }
 
+    public String levelsGained() {
+        return levelsGained + " Levels";
+    }
+
     public String xpPerHour() {
         long currentTime = System.currentTimeMillis();
         if (currentTime > startTime) {
