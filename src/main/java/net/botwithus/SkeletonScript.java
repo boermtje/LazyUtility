@@ -31,7 +31,7 @@ public class SkeletonScript extends LoopingScript {
         //...
     }
 
-    private Area Island_1 = new Area.Rectangular(new Coordinate(3989,6095,0), new Coordinate(4007,6119,0));
+    private Area Island_1 = new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1));
 
     /////////////////////////////////////ChatMessage Stunned + No Food//////////////////////////
     public SkeletonScript(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
@@ -75,29 +75,60 @@ public class SkeletonScript extends LoopingScript {
 
     /////////////////////Skilling + Eating + Backpack Full = Idle////////////////////////
     private long handleSkilling(LocalPlayer player) {
-        if (!hasRune_Essence()){
+        if (!hasRune_Essence()) {
             println("No Rune Essence, going to collect");
             Npc Floating_Essence = NpcQuery.newQuery().name("Floating essence").results().nearest();
-            if (Floating_Essence != null) {println("found");}
+            if (Floating_Essence != null) {
+                println("found");
+            }
             Floating_Essence.interact("Collect");
             println("Collecting Essence");
-            return random.nextLong(1500, 3000);}
-        if (Skills.RUNECRAFTING.getLevel() <9){
-            if (Island_1 != null){
-            println("On Island 1");
-                if (Skills.RUNECRAFTING.getLevel() <1){
+        }
+        if (Skills.RUNECRAFTING.getLevel() < 9) {
+            if (Island_1.contains(player.getCoordinate())) {
+                println("On Island 1");
+                Npc targetNpc = null;
 
-                }
-                if (Skills.RUNECRAFTING.getLevel() <5){
+                if (player.getAnimationId() != -1) {
+                    if (Skills.RUNECRAFTING.getLevel() >= 9) {
+                        targetNpc = NpcQuery.newQuery().name("Rock fragment").results().nearestTo(player);
+                        if (targetNpc == null || !Island_1.contains(targetNpc.getCoordinate())) {
+                            println("Rock fragment not found or not in Island_1. Checking for Water pool.");
+                            targetNpc = NpcQuery.newQuery().name("Water pool").results().nearestTo(player);
+                        }
+                    }
+                    if (targetNpc == null || Skills.RUNECRAFTING.getLevel() >= 5) {
+                        targetNpc = NpcQuery.newQuery().name("Water pool").results().nearestTo(player);
+                    }
+                    if (targetNpc == null) {
+                        println("Checking for Cyclone or Mind Storm.");
+                        Npc cyclone = NpcQuery.newQuery().name("Cyclone").results().nearestTo(player);
+                        Npc mindStorm = NpcQuery.newQuery().name("Mind storm").results().nearestTo(player);
 
-                }
-                if (Skills.RUNECRAFTING.getLevel() <9){
+                        if (cyclone != null && Island_1.contains(cyclone.getCoordinate())) {
+                            targetNpc = cyclone;
+                        } else if (mindStorm != null && Island_1.contains(mindStorm.getCoordinate())) {
+                            targetNpc = mindStorm;
+                        }
+                    }
+
+                    if (targetNpc != null) {
+                        println("Interacting with " + targetNpc.getName());
+                        targetNpc.interact("Siphon");
+                    } else {
+                        println("No suitable NPC found on Island 1.");
+                    }
+                } else {
+                    // Code to navigate to Island_1
+                    println("Not on Island 1. Moving to Island 1.");
                 }
             }
-            //else traverse to Island_1
+            else if (player.getAnimationId() != 16596) {
+                Execution.delay(1000);
+            }
         }
         return random.nextLong(1500, 3000);
-        }
+    }
 
     private boolean hasRune_Essence() {
         ResultSet<Item> runeScan = InventoryItemQuery.newQuery(93).ids(24227).results();
