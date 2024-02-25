@@ -90,7 +90,7 @@ public class SkeletonScript extends LoopingScript {
 
         boolean isOnIsland1 = Island_1.contains(player.getCoordinate());
 
-        if (Skills.RUNECRAFTING.getLevel() < 9) {
+        if (Skills.RUNECRAFTING.getLevel() >= 9) {
             if (isOnIsland1) {
                 println("On Island 1");
                 SceneObject targetObject = null;
