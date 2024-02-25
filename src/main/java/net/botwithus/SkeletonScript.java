@@ -31,7 +31,7 @@ public class SkeletonScript extends LoopingScript {
         //...
     }
 
-    private Area Island_1 = new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1));
+    private Area Island_1 = new Area.Rectangular(new Coordinate(3989,6095,0), new Coordinate(4007,6119,2));
 
     /////////////////////////////////////ChatMessage Stunned + No Food//////////////////////////
     public SkeletonScript(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
@@ -84,12 +84,19 @@ public class SkeletonScript extends LoopingScript {
             Floating_Essence.interact("Collect");
             println("Collecting Essence");
         }
+
+        boolean isOnIsland1 = Island_1.contains(player.getCoordinate());
+
         if (Skills.RUNECRAFTING.getLevel() < 9) {
-            if (Island_1.contains(player.getCoordinate())) {
+            if (isOnIsland1) {
                 println("On Island 1");
                 Npc targetNpc = null;
 
-                if (player.getAnimationId() != -1) {
+                if (player.getAnimationId() != 16596) {
+                    Execution.delay(1000);
+                    println("Already Collecting");
+                }
+                else {
                     if (Skills.RUNECRAFTING.getLevel() >= 9) {
                         targetNpc = NpcQuery.newQuery().name("Rock fragment").results().nearestTo(player);
                         if (targetNpc == null || !Island_1.contains(targetNpc.getCoordinate())) {
@@ -118,13 +125,16 @@ public class SkeletonScript extends LoopingScript {
                     } else {
                         println("No suitable NPC found on Island 1.");
                     }
-                } else {
-                    // Code to navigate to Island_1
-                    println("Not on Island 1. Moving to Island 1.");
+
                 }
             }
-            else if (player.getAnimationId() != 16596) {
-                Execution.delay(1000);
+            else {
+                println("Not on Island 1. Moving to Island 1.");
+                // Code to navigate to Island_1
+                // ...
+            }
+            if (player.getAnimationId() != 16596 && isOnIsland1) {
+                Execution.delay(1000); // Delay when the player's animation ID is not 16596
             }
         }
         return random.nextLong(1500, 3000);
