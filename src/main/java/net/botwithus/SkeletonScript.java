@@ -91,6 +91,7 @@ public class SkeletonScript extends LoopingScript {
         boolean isOnIsland1 = Island_1.contains(player.getCoordinate());
 
         if (Skills.RUNECRAFTING.getLevel() >= 9) {
+            println("Under level 9, farming on Island 1");
             if (isOnIsland1) {
                 println("On Island 1");
                 SceneObject targetObject = null;
@@ -98,17 +99,17 @@ public class SkeletonScript extends LoopingScript {
                 if (player.getAnimationId() == -1) {
                     println("Not yet collecting");
                     if (Skills.RUNECRAFTING.getLevel() >= 9) {
-                        SceneObject rockFragment = SceneObjectQuery.newQuery().name("Rock fragment").results().nearestTo(player);
-                        if (rockFragment != null && Island_1.contains(targetObject.getCoordinate())) {
+                        SceneObject rockFragment = SceneObjectQuery.newQuery().name("Rock fragment").inside(Island_1).results().nearestTo(player);
+                        if (rockFragment != null) {
                             targetObject = rockFragment;
                         }
                         if (rockFragment == null) {
-                            println("Water pool not found or not in Island_1.");
+                            println("Rock Fragment not found or not in Island_1.");
                         }
                     }
                     if (targetObject == null || Skills.RUNECRAFTING.getLevel() >= 5) {
-                       SceneObject waterPool = SceneObjectQuery.newQuery().name("Water pool").results().nearestTo(player);
-                        if (waterPool != null && Island_1.contains(waterPool.getCoordinate())) {
+                       SceneObject waterPool = SceneObjectQuery.newQuery().name("Water pool").inside(Island_1).results().nearestTo(player);
+                        if (waterPool != null) {
                             targetObject = waterPool;
                         }
                         if (waterPool == null) {
@@ -117,12 +118,12 @@ public class SkeletonScript extends LoopingScript {
                     }
                     if (targetObject == null) {
                         println("Checking for Cyclone or Mind Storm.");
-                        SceneObject cyclone = SceneObjectQuery.newQuery().name("Cyclone").results().nearestTo(player);
-                        SceneObject mindStorm = SceneObjectQuery.newQuery().name("Mind storm").results().nearestTo(player);
+                        SceneObject cyclone = SceneObjectQuery.newQuery().name("Cyclone").inside(Island_1).results().nearestTo(player);
+                        SceneObject mindStorm = SceneObjectQuery.newQuery().name("Mind storm").inside(Island_1).results().nearestTo(player);
 
-                        if (cyclone != null && Island_1.contains(cyclone.getCoordinate())) {
+                        if (cyclone != null) {
                             targetObject = cyclone;
-                        } else if (mindStorm != null && Island_1.contains(mindStorm.getCoordinate())) {
+                        } else if (mindStorm != null) {
                             targetObject = mindStorm;
                         }
                     }
