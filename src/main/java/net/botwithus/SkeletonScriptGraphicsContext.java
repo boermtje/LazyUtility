@@ -16,7 +16,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
 
     @Override
     public void drawSettings() {
-        if (ImGui.Begin("Gullible Tourist", ImGuiWindowFlag.None.getValue())) {
+        if (ImGui.Begin("LazyRuneSpan", ImGuiWindowFlag.None.getValue())) {
             if (ImGui.BeginTabBar("My bar", ImGuiWindowFlag.None.getValue())) {
                 if (ImGui.BeginTabItem("Settings", ImGuiWindowFlag.None.getValue())) {
                     ImGui.Text("Welcome to my script!");
@@ -32,10 +32,12 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                     }
                     ImGui.EndTabItem();
                 }
-                if (ImGui.BeginTabItem("Other", ImGuiWindowFlag.None.getValue())) {
-                    script.setSomeBool(ImGui.Checkbox("Are you cool?", script.isSomeBool()));
+                if (ImGui.BeginTabItem("Instructions", ImGuiWindowFlag.None.getValue())) {
+                    ImGui.Text("Go to which Runespan island you want to farm on.");
+                    ImGui.Text("Start the bot and let it do the rest");
                     ImGui.EndTabItem();
                 }
+
                 if (ImGui.BeginTabItem("Stats", ImGuiWindowFlag.None.getValue())) {
                     ImGui.Text("Time Passed: " + script.timePassed());
                     ImGui.Text("TTL: " + script.ttl());

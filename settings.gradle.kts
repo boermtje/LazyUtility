@@ -1,2 +1,2 @@
-rootProject.name = "BwuExtendedPublicAPI"
+rootProject.name = "LazyRuneSpan"
 
