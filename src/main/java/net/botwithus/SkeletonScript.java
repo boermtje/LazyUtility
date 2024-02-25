@@ -92,7 +92,8 @@ public class SkeletonScript extends LoopingScript {
                 println("On Island 1");
                 Npc targetNpc = null;
 
-                if (player.getAnimationId() != -1) {
+                if (player.getAnimationId() == -1) {
+                    println("Not yet collecting");
                     if (Skills.RUNECRAFTING.getLevel() >= 9) {
                         targetNpc = NpcQuery.newQuery().name("Rock fragment").results().nearestTo(player);
                         if (targetNpc == null || !Island_1.contains(targetNpc.getCoordinate())) {
@@ -121,6 +122,9 @@ public class SkeletonScript extends LoopingScript {
                     } else {
                         println("No suitable NPC found on Island 1.");
                     }
+                } else {
+                    Execution.delay(1000);
+                    println("Already Collecting");
                 }
             }
             else {
@@ -128,7 +132,7 @@ public class SkeletonScript extends LoopingScript {
                 // Code to navigate to Island_1
                 // ...
             }
-            if (player.getAnimationId() != 16596 && isOnIsland1) {
+            if (player.getAnimationId() == 16596 && isOnIsland1) {
                 Execution.delay(1000); // Delay when the player's animation ID is not 16596
             }
         }
