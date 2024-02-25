@@ -122,10 +122,6 @@ public class SkeletonScript extends LoopingScript {
                         println("No suitable NPC found on Island 1.");
                     }
                 }
-                else {
-                    Execution.delay(1000);
-                    println("Already Collecting");
-                }
             }
             else {
                 println("Not on Island 1. Moving to Island 1.");
