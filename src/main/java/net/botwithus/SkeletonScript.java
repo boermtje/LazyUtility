@@ -105,7 +105,10 @@ public class SkeletonScript extends LoopingScript {
                         }
                     }
                     if (targetObject == null || Skills.RUNECRAFTING.getLevel() >= 5) {
-                        targetObject = SceneObjectQuery.newQuery().name("Water pool").results().nearestTo(player);
+                       SceneObject waterPool = SceneObjectQuery.newQuery().name("Water pool").results().nearestTo(player);
+                        if (waterPool != null && Island_1.contains(waterPool.getCoordinate())) {
+                            targetObject = waterPool;
+                        }
                     }
                     if (targetObject == null) {
                         println("Checking for Cyclone or Mind Storm.");
