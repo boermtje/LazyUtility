@@ -5,9 +5,12 @@ import net.botwithus.rs3.events.impl.ChatMessageEvent;
 import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
+import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
 import net.botwithus.rs3.game.queries.results.ResultSet;
+import net.botwithus.rs3.game.scene.entities.Entity;
 import net.botwithus.rs3.game.scene.entities.characters.npc.Npc;
 import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
+import net.botwithus.rs3.game.scene.entities.object.SceneObject;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.config.ScriptConfig;
@@ -90,54 +93,55 @@ public class SkeletonScript extends LoopingScript {
         if (Skills.RUNECRAFTING.getLevel() < 9) {
             if (isOnIsland1) {
                 println("On Island 1");
-                Npc targetNpc = null;
+                SceneObject targetObject = null;
 
                 if (player.getAnimationId() == -1) {
                     println("Not yet collecting");
                     if (Skills.RUNECRAFTING.getLevel() >= 9) {
-                        targetNpc = NpcQuery.newQuery().name("Rock fragment").results().nearestTo(player);
-                        if (targetNpc == null || !Island_1.contains(targetNpc.getCoordinate())) {
+                        targetObject = SceneObjectQuery.newQuery().name("Rock fragment").results().nearestTo(player);
+                        if (targetObject == null || !Island_1.contains(targetObject.getCoordinate())) {
                             println("Rock fragment not found or not in Island_1. Checking for Water pool.");
-                            targetNpc = NpcQuery.newQuery().name("Water pool").results().nearestTo(player);
+                            targetObject = SceneObjectQuery.newQuery().name("Water pool").results().nearestTo(player);
                         }
                     }
-                    if (targetNpc == null || Skills.RUNECRAFTING.getLevel() >= 5) {
-                        targetNpc = NpcQuery.newQuery().name("Water pool").results().nearestTo(player);
+                    if (targetObject == null || Skills.RUNECRAFTING.getLevel() >= 5) {
+                        targetObject = SceneObjectQuery.newQuery().name("Water pool").results().nearestTo(player);
                     }
-                    if (targetNpc == null) {
+                    if (targetObject == null) {
                         println("Checking for Cyclone or Mind Storm.");
-                        Npc cyclone = NpcQuery.newQuery().name("Cyclone").results().nearestTo(player);
-                        Npc mindStorm = NpcQuery.newQuery().name("Mind storm").results().nearestTo(player);
+                        SceneObject cyclone = SceneObjectQuery.newQuery().name("Cyclone").results().nearestTo(player);
+                        SceneObject mindStorm = SceneObjectQuery.newQuery().name("Mind storm").results().nearestTo(player);
 
                         if (cyclone != null && Island_1.contains(cyclone.getCoordinate())) {
-                            targetNpc = cyclone;
+                            targetObject = cyclone;
                         } else if (mindStorm != null && Island_1.contains(mindStorm.getCoordinate())) {
-                            targetNpc = mindStorm;
+                            targetObject = mindStorm;
                         }
                     }
 
-                    if (targetNpc != null) {
-                        println("Interacting with " + targetNpc.getName());
-                        targetNpc.interact("Siphon");
+                    if (targetObject != null) {
+                        println("Interacting with " + targetObject.getName());
+                        targetObject.interact("Siphon");
                     } else {
-                        println("No suitable NPC found on Island 1.");
+                        println("No suitable SceneObject found on Island 1.");
                     }
                 } else {
                     Execution.delay(1000);
                     println("Already Collecting");
                 }
             }
-            else {
-                println("Not on Island 1. Moving to Island 1.");
-                // Code to navigate to Island_1
-                // ...
-            }
+            else{
+                    println("Not on Island 1. Moving to Island 1.");
+                    // Code to navigate to Island_1
+                    // ...
+                }
             if (player.getAnimationId() == 16596 && isOnIsland1) {
                 Execution.delay(1000); // Delay when the player's animation ID is not 16596
-            }
+                }
         }
         return random.nextLong(1500, 3000);
     }
+
 
     private boolean hasRune_Essence() {
         ResultSet<Item> runeScan = InventoryItemQuery.newQuery(93).ids(24227).results();
