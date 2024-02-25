@@ -98,16 +98,21 @@ public class SkeletonScript extends LoopingScript {
                 if (player.getAnimationId() == -1) {
                     println("Not yet collecting");
                     if (Skills.RUNECRAFTING.getLevel() >= 9) {
-                        targetObject = SceneObjectQuery.newQuery().name("Rock fragment").results().nearestTo(player);
-                        if (targetObject == null || !Island_1.contains(targetObject.getCoordinate())) {
-                            println("Rock fragment not found or not in Island_1. Checking for Water pool.");
-                            targetObject = SceneObjectQuery.newQuery().name("Water pool").results().nearestTo(player);
+                        SceneObject rockFragment = SceneObjectQuery.newQuery().name("Rock fragment").results().nearestTo(player);
+                        if (rockFragment != null && Island_1.contains(targetObject.getCoordinate())) {
+                            targetObject = rockFragment;
+                        }
+                        if (rockFragment == null) {
+                            println("Water pool not found or not in Island_1.");
                         }
                     }
                     if (targetObject == null || Skills.RUNECRAFTING.getLevel() >= 5) {
                        SceneObject waterPool = SceneObjectQuery.newQuery().name("Water pool").results().nearestTo(player);
                         if (waterPool != null && Island_1.contains(waterPool.getCoordinate())) {
                             targetObject = waterPool;
+                        }
+                        if (waterPool == null) {
+                            println("Water pool not found or not in Island_1.");
                         }
                     }
                     if (targetObject == null) {
