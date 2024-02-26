@@ -90,7 +90,53 @@ public class SkeletonScript extends LoopingScript {
 
         boolean isOnIsland1 = Island_1.contains(player.getCoordinate());
 
-        if (Skills.RUNECRAFTING.getLevel() >= 9) {
+//Use an hashmap to store the coordinates of the islands and check if the player is on the island
+//        HashMap<String, Area> islands = new HashMap<>();
+//        islands.put("Island_1", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+//        islands.put("Island_2", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+//        islands.put("Island_3", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+//        islands.put("Island_4", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+//        islands.put("Island_5", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+//        islands.put("Island_6", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+//        islands.put("Island_7", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+//        islands.put("Island_8", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+//        islands.put("Island_9", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
+
+        //use the hashmap to check if the player is on the island
+//        for (Map.Entry<String, Area> entry : islands.entrySet()) {
+//            if (entry.getValue().contains(player.getCoordinate())) {
+//                println("On " + entry.getKey());
+//            } else {
+//                println("Not on " + entry.getKey());
+//            }
+//        }
+
+        //Use an hashmap for target objects
+//        HashMap<String, SceneObject> targetObjects = new HashMap<>();
+//        targetObjects.put("Rock Fragment", SceneObjectQuery.newQuery().name("Rock fragment").inside(Island_1).results().nearestTo(player));
+//        targetObjects.put("Water Pool", SceneObjectQuery.newQuery().name("Water pool").inside(Island_1).results().nearestTo(player));
+//        targetObjects.put("Cyclone", SceneObjectQuery.newQuery().name("Cyclone").inside(Island_1).results().nearestTo(player));
+//        targetObjects.put("Mind Storm", SceneObjectQuery.newQuery().name("Mind storm").inside(Island_1).results().nearestTo(player));
+
+        //Use the hashmap to interact with the target object
+//        for (Map.Entry<String, SceneObject> entry : targetObjects.entrySet()) {
+//            if (entry.getValue() != null) {
+//                println("Interacting with " + entry.getKey());
+//                entry.getValue().interact("Siphon");
+//            } else {
+//                println(entry.getKey() + " not found or not in Island_1.");
+//            }
+//        }
+
+        //If the player is under level 9, farm on Island 1
+        //If the player is on Island 1, collect from the Rock Fragment, Water Pool, Cyclone or Mind Storm
+        //If the player is not on Island 1, move to Island 1
+        //If the player is already collecting, delay for 1 second
+
+        //If the player's animation ID is not 16596, delay for 1 second
+        //If the player's animation ID is 16596 and the player is on Island 1, delay for 1 second
+
+        if (Skills.RUNECRAFTING.getLevel() <= 9) {
             println("Under level 9, farming on Island 1");
             if (isOnIsland1) {
                 println("On Island 1");
