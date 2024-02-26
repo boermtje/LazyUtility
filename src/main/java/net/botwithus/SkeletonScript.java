@@ -6,6 +6,7 @@ import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
+import net.botwithus.rs3.game.queries.results.EntityResultSet;
 import net.botwithus.rs3.game.queries.results.ResultSet;
 import net.botwithus.rs3.game.scene.entities.Entity;
 import net.botwithus.rs3.game.scene.entities.characters.npc.Npc;
@@ -18,13 +19,15 @@ import net.botwithus.rs3.events.impl.SkillUpdateEvent;
 import net.botwithus.rs3.game.skills.Skills;
 import net.botwithus.rs3.game.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class SkeletonScript extends LoopingScript {
 
     private BotState botState = BotState.IDLE;
     private Random random = new Random();
-
+    private SkeletonScriptGraphicsContext sgc;
 
     /////////////////////////////////////Botstate//////////////////////////
     enum BotState {
@@ -34,21 +37,97 @@ public class SkeletonScript extends LoopingScript {
         //...
     }
 
-    private Area Island_1 = new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1));
-
-    /////////////////////////////////////ChatMessage Stunned + No Food//////////////////////////
     public SkeletonScript(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(s, scriptConfig, scriptDefinition);
         this.sgc = new SkeletonScriptGraphicsContext(getConsole(), this);
+    }
 
-//        // Subscribe to ChatMessageEvent
-//        subscribe(ChatMessageEvent.class, chatMessageEvent -> {
-//            // Idles when stunned
-//            if (chatMessageEvent.getMessage().contains("stunned")) {
-//                Execution.delay(4000); // Idle for 4 seconds
-//                println("Got hit, Idle");
-//            }
-//        });
+    @Override
+    public void onLoop(LocalPlayer player) {
+        // Ensure the player is in a valid state to perform actions
+        if (Client.getLocalPlayer() == null || Client.getGameState() != Client.GameState.LOGGED_IN) {
+            return;
+        }
+
+        //Undead Soul >= 95 , Living soul >= 90, Bloody Skulls >= 83, Blood Pool >= 77, Skulls >= 65, Jumper >= 54, Shifter >= 44, Nebula >= 40, Chaotic Cloud >= 35, Fire Storm >= 27, Fleshy Growth >= 20, Vine >= 17, Fireball >= 14, Rock Fragment >= 9, Water Pool >= 5, Mind Storm >= 1, Cyclone >= 1
+        //Write an hashmap for priority objects with their level requirements
+        HashMap<String, Integer> priorityObjects = new HashMap<>();
+        priorityObjects.put("Undead Soul", 95);
+        priorityObjects.put("Living soul", 90);
+        priorityObjects.put("Bloody skulls", 83);
+        priorityObjects.put("Blood pool", 77);
+        priorityObjects.put("Skulls", 65);
+        priorityObjects.put("Jumper", 54);
+        priorityObjects.put("Shifter", 44);
+        priorityObjects.put("Nebula", 40);
+        priorityObjects.put("Chaotic cloud", 35);
+        priorityObjects.put("Fire storm", 27);
+        priorityObjects.put("Fleshy growth", 20);
+        priorityObjects.put("Vine", 17);
+        priorityObjects.put("Fireball", 14);
+        priorityObjects.put("Rock Fragment", 9);
+        priorityObjects.put("Water pool", 5);
+        priorityObjects.put("Mind storm", 1);
+        priorityObjects.put("Cyclone", 1);
+
+        //Write code to indicate coordinates of the islands
+        Area Island_1 = new Area(3989, 6119, 1, 4007, 6119, 1);
+        Area Island_16 = new Area(3990, 6067, 1, 4014, 6041, 1);
+        Area Island_5 = new Area(4125, 6093, 1, 4146, 6068, 1);
+        Area Island_23 = new Area(4191, 6108, 1, 4204, 6085, 1);
+        Area Island_13 = new Area(4325, 6055, 1, 4365, 6037, 1);
+        Area Island_29 = new Area(4371, 6086, 1, 4385, 6070, 1);
+
+        //Write an hashmap for the islands
+        HashMap<String, Area> islands = new HashMap<>();
+        islands.put("Island_Low_1", Island_1);
+        islands.put("Island_Low_16", Island_16);
+        islands.put("Island_Mid__5", Island_5);
+        islands.put("Island_Mid_23", Island_23);
+        islands.put("Island_High_13", Island_13);
+        islands.put("Island_High_29", Island_29);
+
+        //Write an hashmap for level requirements
+        HashMap<String, Integer> levelRequirements = new HashMap<>();
+        levelRequirements.put("Island_Low_1", 1);
+        levelRequirements.put("Island_Low_16", 9);
+        levelRequirements.put("Island_Mid__5", 33);
+        levelRequirements.put("Island_Mid_23", 50);
+        levelRequirements.put("Island_High_13", 66);
+        levelRequirements.put("Island_High_29", 90);
+
+        //Write a for loop to check the level requirements
+        for (Map.Entry<String, Integer> entry : levelRequirements.entrySet()) {
+            if (Skills.RUNECRAFTING.getLevel() >= entry.getValue()) {
+                println("Farming on " + entry.getKey());
+            } else {
+                println("Not farming on " + entry.getKey());
+            }
+        }
+
+        //use the hashmap to check if the player is on the island
+        for (Map.Entry<String, Area> entry : islands.entrySet()) {
+            if (entry.getValue().contains(player.getCoordinate())) {
+                println("On " + entry.getKey());
+            } else {
+                println("Not on " + entry.getKey());
+            }
+        }
+
+        // Query for priority objects in the area
+        EntityResultSet<SceneObject> priorityObject = SceneObjectQuery.newQuery()
+                .name(priorityObjects)
+                .inside(islands)
+                .results();
+
+        // Interact with the nearest priority object
+        SceneObject nearestObject = priorityObject.nearestTo(Client.getLocalPlayer().getCoordinate());
+        if (nearestObject != null) {
+            if (nearestObject.interact("Siphon")) { // Replace "Interact option" with the actual option
+                println("Interacting with: " + nearestObject.getName());
+                Execution.delay(1000); // Wait for the interaction to complete
+            }
+        }
     }
 
     @Override
@@ -76,124 +155,110 @@ public class SkeletonScript extends LoopingScript {
         }
     }
 
+    //Make a initialize method to move the areas into
+    //a hashmap and to check if the player is on the island
+    private void initialize(LocalPlayer player) {
+
+
+
     /////////////////////Skilling + Eating + Backpack Full = Idle////////////////////////
-    private long handleSkilling(LocalPlayer player) {
-        if (!hasRune_Essence()) {
-            println("No Rune Essence, going to collect");
-            Npc Floating_Essence = NpcQuery.newQuery().name("Floating essence").results().nearest();
-            if (Floating_Essence != null) {
-                println("found");
+    private long handleSkilling(LocalPlayer player){
+            if (!hasRune_Essence()) {
+                println("No Rune Essence, going to collect");
+                Npc Floating_Essence = NpcQuery.newQuery().name("Floating essence").results().nearest();
+                if (Floating_Essence != null) {
+                    println("found");
+                }
+                Floating_Essence.interact("Collect");
+                println("Collecting Essence");
             }
-            Floating_Essence.interact("Collect");
-            println("Collecting Essence");
-        }
 
-        boolean isOnIsland1 = Island_1.contains(player.getCoordinate());
 
-//Use an hashmap to store the coordinates of the islands and check if the player is on the island
-//        HashMap<String, Area> islands = new HashMap<>();
-//        islands.put("Island_1", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-//        islands.put("Island_2", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-//        islands.put("Island_3", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-//        islands.put("Island_4", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-//        islands.put("Island_5", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-//        islands.put("Island_6", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-//        islands.put("Island_7", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-//        islands.put("Island_8", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-//        islands.put("Island_9", new Area.Rectangular(new Coordinate(3989,6095,1), new Coordinate(4007,6119,1)));
-
-        //use the hashmap to check if the player is on the island
-//        for (Map.Entry<String, Area> entry : islands.entrySet()) {
-//            if (entry.getValue().contains(player.getCoordinate())) {
-//                println("On " + entry.getKey());
-//            } else {
-//                println("Not on " + entry.getKey());
-//            }
-//        }
-
-        //Use an hashmap for target objects
-//        HashMap<String, SceneObject> targetObjects = new HashMap<>();
-//        targetObjects.put("Rock Fragment", SceneObjectQuery.newQuery().name("Rock fragment").inside(Island_1).results().nearestTo(player));
-//        targetObjects.put("Water Pool", SceneObjectQuery.newQuery().name("Water pool").inside(Island_1).results().nearestTo(player));
-//        targetObjects.put("Cyclone", SceneObjectQuery.newQuery().name("Cyclone").inside(Island_1).results().nearestTo(player));
-//        targetObjects.put("Mind Storm", SceneObjectQuery.newQuery().name("Mind storm").inside(Island_1).results().nearestTo(player));
-
-        //Use the hashmap to interact with the target object
-//        for (Map.Entry<String, SceneObject> entry : targetObjects.entrySet()) {
-//            if (entry.getValue() != null) {
-//                println("Interacting with " + entry.getKey());
-//                entry.getValue().interact("Siphon");
-//            } else {
-//                println(entry.getKey() + " not found or not in Island_1.");
-//            }
-//        }
-
-        //If the player is under level 9, farm on Island 1
-        //If the player is on Island 1, collect from the Rock Fragment, Water Pool, Cyclone or Mind Storm
-        //If the player is not on Island 1, move to Island 1
-        //If the player is already collecting, delay for 1 second
-
-        //If the player's animation ID is not 16596, delay for 1 second
-        //If the player's animation ID is 16596 and the player is on Island 1, delay for 1 second
-
-        if (Skills.RUNECRAFTING.getLevel() <= 9) {
-            println("Under level 9, farming on Island 1");
-            if (isOnIsland1) {
-                println("On Island 1");
-                SceneObject targetObject = null;
-
-                if (player.getAnimationId() == -1) {
-                    println("Not yet collecting");
-                    if (Skills.RUNECRAFTING.getLevel() >= 9) {
-                        SceneObject rockFragment = SceneObjectQuery.newQuery().name("Rock fragment").inside(Island_1).results().nearestTo(player);
-                        if (rockFragment != null) {
-                            targetObject = rockFragment;
-                        }
-                        if (rockFragment == null) {
-                            println("Rock Fragment not found or not in Island_1.");
-                        }
-                    }
-                    if (targetObject == null || Skills.RUNECRAFTING.getLevel() >= 5) {
-                       SceneObject waterPool = SceneObjectQuery.newQuery().name("Water pool").inside(Island_1).results().nearestTo(player);
-                        if (waterPool != null) {
-                            targetObject = waterPool;
-                        }
-                        if (waterPool == null) {
-                            println("Water pool not found or not in Island_1.");
-                        }
-                    }
-                    if (targetObject == null) {
-                        println("Checking for Cyclone or Mind Storm.");
-                        SceneObject cyclone = SceneObjectQuery.newQuery().name("Cyclone").inside(Island_1).results().nearestTo(player);
-                        SceneObject mindStorm = SceneObjectQuery.newQuery().name("Mind storm").inside(Island_1).results().nearestTo(player);
-
-                        if (cyclone != null) {
-                            targetObject = cyclone;
-                        } else if (mindStorm != null) {
-                            targetObject = mindStorm;
-                        }
-                    }
-
-                    if (targetObject != null) {
-                        println("Interacting with " + targetObject.getName());
-                        targetObject.interact("Siphon");
-                    } else {
-                        println("No suitable SceneObject found on Island 1.");
-                    }
+            //use the hashmap to check if the player is on the island
+            for (Map.Entry<String, Area> entry : islands.entrySet()) {
+                if (entry.getValue().contains(player.getCoordinate())) {
+                    println("On " + entry.getKey());
                 } else {
-                    Execution.delay(1000);
-                    println("Already Collecting");
+                    println("Not on " + entry.getKey());
                 }
             }
-            else{
-                    println("Not on Island 1. Moving to Island 1.");
-                    // Code to navigate to Island_1
-                    // ...
-                }
-            if (player.getAnimationId() == 16596 && isOnIsland1) {
-                Execution.delay(1000); // Delay when the player's animation ID is not 16596
-                }
+
+            //If the player is above level 90, farm on Island 29
+            //If the player is above level 66, farm on Island 13
+            //If the player is above level 50, farm on Island 23
+            //If the player is above level 33, farm on Island 5
+            //If the player is above level 9, farm on Island 16
+            //If the player is under level 9, farm on Island 1
+
         }
+
+
+
+
+
+
+
+
+
+
+//        if (Skills.RUNECRAFTING.getLevel() <= 9) {
+//            println("Under level 9, farming on Island 1");
+//            if (isOnIsland1) {
+//                println("On Island 1");
+//                SceneObject targetObject = null;
+//
+//                if (player.getAnimationId() == -1) {
+//                    println("Not yet collecting");
+//                    if (Skills.RUNECRAFTING.getLevel() >= 9) {
+//                        SceneObject rockFragment = SceneObjectQuery.newQuery().name("Rock fragment").inside(Island_1).results().nearestTo(player);
+//                        if (rockFragment != null) {
+//                            targetObject = rockFragment;
+//                        }
+//                        if (rockFragment == null) {
+//                            println("Rock Fragment not found or not in Island_1.");
+//                        }
+//                    }
+//                    if (targetObject == null || Skills.RUNECRAFTING.getLevel() >= 5) {
+//                       SceneObject waterPool = SceneObjectQuery.newQuery().name("Water pool").inside(Island_1).results().nearestTo(player);
+//                        if (waterPool != null) {
+//                            targetObject = waterPool;
+//                        }
+//                        if (waterPool == null) {
+//                            println("Water pool not found or not in Island_1.");
+//                        }
+//                    }
+//                    if (targetObject == null) {
+//                        println("Checking for Cyclone or Mind Storm.");
+//                        SceneObject cyclone = SceneObjectQuery.newQuery().name("Cyclone").inside(Island_1).results().nearestTo(player);
+//                        SceneObject mindStorm = SceneObjectQuery.newQuery().name("Mind storm").inside(Island_1).results().nearestTo(player);
+//
+//                        if (cyclone != null) {
+//                            targetObject = cyclone;
+//                        } else if (mindStorm != null) {
+//                            targetObject = mindStorm;
+//                        }
+//                    }
+//
+//                    if (targetObject != null) {
+//                        println("Interacting with " + targetObject.getName());
+//                        targetObject.interact("Siphon");
+//                    } else {
+//                        println("No suitable SceneObject found on Island 1.");
+//                    }
+//                } else {
+//                    Execution.delay(1000);
+//                    println("Already Collecting");
+//                }
+//            }
+//            else{
+//                    println("Not on Island 1. Moving to Island 1.");
+//                    // Code to navigate to Island_1
+//                    // ...
+//                }
+//            if (player.getAnimationId() == 16596 && isOnIsland1) {
+//                Execution.delay(1000); // Delay when the player's animation ID is not 16596
+//                }
+//        }
         return random.nextLong(1500, 3000);
     }
 
