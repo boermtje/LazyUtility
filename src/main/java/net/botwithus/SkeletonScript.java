@@ -23,7 +23,6 @@ public class SkeletonScript extends LoopingScript {
 
     private BotState botState = BotState.IDLE;
     private Random random = new Random();
-    private SkeletonScriptGraphicsContext sgc;
     private HashMap<String, Integer> priorityObjects;
     private HashMap<String, Area> islands;
     private HashMap<String, Integer> levelRequirements;
@@ -105,13 +104,13 @@ public class SkeletonScript extends LoopingScript {
         switch (botState) {
             case IDLE ->                {println("We're idle!");
                 Execution.delay(random.nextLong(1000,3000));}
-            case SKILLING ->            {println("We're Skilling!");
-                Execution.delay(interactWithPriorityObjects(player));}
         }
         checkAndCollectEssence();
+        interactWithPriorityObjects(player);
     }
 
     private void checkAndCollectEssence() {
+        println("Checking for Rune Essence");
         if (!hasRune_Essence()) {
             println("No Rune Essence, going to collect");
             Npc Floating_Essence = NpcQuery.newQuery().name("Floating essence").results().nearest();
@@ -124,20 +123,33 @@ public class SkeletonScript extends LoopingScript {
     }
 
     private void tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
-        try {
-            EntityResultSet<SceneObject> priorityObjectResultSet = SceneObjectQuery.newQuery()
-                    .name(eligibleObjects.toArray(new String[0]))
-                    .inside(currentIsland)
-                    .results();
+        println("Attempting to interact with objects in " + currentIsland);
 
-            SceneObject nearestObject = priorityObjectResultSet.nearestTo(Client.getLocalPlayer().getCoordinate());
-            if (nearestObject != null && nearestObject.interact("Siphon")) {
-                println("Interacting with: " + nearestObject.getName());
-                Execution.delay(1000); // Wait for the interaction to complete
+        // Iterate through eligible objects in decreasing order of priority
+        for (String objectName : eligibleObjects) {
+            println("Looking for: " + objectName);
+            try {
+                EntityResultSet<SceneObject> priorityObjectResultSet = SceneObjectQuery.newQuery()
+                        .name(objectName)
+                        .inside(currentIsland)
+                        .results();
+
+                SceneObject nearestObject = priorityObjectResultSet.nearestTo(player.getCoordinate());
+                if (nearestObject != null) {
+                    println("Found and interacting with: " + nearestObject.getName());
+                    if (nearestObject.interact("Siphon")) {
+                        Execution.delay(1000); // Wait for the interaction to complete
+                        return; // Exit the method after successful interaction
+                    }
+                } else {
+                    println(objectName + " not found in the current island.");
+                }
+            } catch (Exception e) {
+                println("An error occurred while interacting with " + objectName + ": " + e.getMessage());
             }
-        } catch (Exception e) {
-            println("An error occurred: " + e.getMessage());
         }
+
+        println("No eligible objects found for interaction in the current island.");
     }
 
     private Area determineCurrentIsland(LocalPlayer player) {
@@ -153,7 +165,7 @@ public class SkeletonScript extends LoopingScript {
         int playerLevel = Skills.RUNECRAFTING.getLevel();
         List<String> eligibleObjects = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : priorityObjects.entrySet()) {
-            if (playerLevel >= entry.getValue()) {
+            if (playerLevel >= entry.getValue()) { // This ensures objects with level <= playerLevel are included
                 eligibleObjects.add(entry.getKey());
             }
         }
@@ -161,15 +173,16 @@ public class SkeletonScript extends LoopingScript {
     }
 
 
-    private long interactWithPriorityObjects(LocalPlayer player) {
+    private void interactWithPriorityObjects(LocalPlayer player) {
+        println("Interacting with priority objects");
         Area currentIsland = determineCurrentIsland(player);
+        println("Current Island: " + currentIsland.getArea());
         if (currentIsland != null) {
             List<String> eligibleObjects = getEligibleObjects(player);
             tryInteractWithNearestObject(currentIsland, eligibleObjects, player);
         } else {
             println("Player is not on any known island.");
         }
-        return random.nextLong(1500, 3000);
     }
 
     private boolean hasRune_Essence() {
