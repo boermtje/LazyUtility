@@ -16,6 +16,7 @@ import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.events.impl.SkillUpdateEvent;
 import net.botwithus.rs3.game.skills.Skills;
 import net.botwithus.rs3.game.*;
+import net.botwithus.rs3.util.RandomGenerator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -142,7 +143,7 @@ public class SkeletonScript extends LoopingScript {
                 if (nearestObject != null) {
                     println("Found and interacting with: " + nearestObject.getName());
                     if (nearestObject.interact("Siphon")) {
-                        Execution.delay(1000); // Wait for the interaction to complete
+                        Execution.delay(RandomGenerator.nextInt(5000, 10000)); // Wait for the interaction to complete
                         return; // Exit the method after successful interaction
                     }
                 } else {
@@ -190,6 +191,7 @@ public class SkeletonScript extends LoopingScript {
                 eligibleObjects.add(entry.getKey());
             }
         }
+
         return priorityObjects.entrySet().stream()
                 // Filter to include only those objects for which player level is sufficient
                 .filter(entry -> playerLevel >= entry.getValue())
