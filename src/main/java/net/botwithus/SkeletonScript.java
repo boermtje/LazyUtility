@@ -66,7 +66,7 @@ public class SkeletonScript extends LoopingScript {
         islands = new HashMap<>();
         Area.Rectangular Island_1 = new Area.Rectangular(new Coordinate(3989, 6095, 1), new Coordinate(4007, 6119, 1));
         islands.put("Island_Low_1", Island_1);
-        Area.Rectangular Island_16 = new Area.Rectangular(new Coordinate(4055, 6093, 1), new Coordinate(4075, 6073, 1));
+        Area.Rectangular Island_16 = new Area.Rectangular(new Coordinate(3990, 6067, 1), new Coordinate(4014, 6041, 1));
         islands.put("Island_Low_16", Island_16);
         Area.Rectangular Island_5 = new Area.Rectangular(new Coordinate(4125, 6093, 1), new Coordinate(4146, 6068, 1));
         islands.put("Island_Mid__5", Island_5);
@@ -121,6 +121,12 @@ public class SkeletonScript extends LoopingScript {
 
     private void tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
         println("Attempting to interact with objects in " + currentIsland);
+
+        // First, check if the player is already interacting (animation ID 16596)
+        if (player.getAnimationId() == 16596) {
+            println("Player is already interacting with an object.");
+            return;
+        }
 
         // Iterate through eligible objects in decreasing order of priority
         for (String objectName : eligibleObjects) {
