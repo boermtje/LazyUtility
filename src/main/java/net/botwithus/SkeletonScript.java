@@ -104,12 +104,12 @@ public class SkeletonScript extends LoopingScript {
             case IDLE ->                {println("We're idle!");
                 Execution.delay(random.nextLong(1000,3000));}
         }
-        checkAndCollectEssence();
         interactWithPriorityObjects(player);
     }
 
-    private void checkAndCollectEssence() {
-        println("Checking for Rune Essence");
+    private void tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
+        println("Attempting to interact with objects in " + currentIsland);
+
         if (!hasRune_Essence()) {
             println("No Rune Essence, going to collect");
             Npc Floating_Essence = NpcQuery.newQuery().name("Floating essence").results().nearest();
@@ -119,10 +119,6 @@ public class SkeletonScript extends LoopingScript {
             Floating_Essence.interact("Collect");
             println("Collecting Essence");
         }
-    }
-
-    private void tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
-        println("Attempting to interact with objects in " + currentIsland);
 
         // First, check if the player is already interacting (animation ID 16596)
         if (player.getAnimationId() == 16596) {
