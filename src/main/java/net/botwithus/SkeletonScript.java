@@ -44,7 +44,7 @@ public class SkeletonScript extends LoopingScript {
     private void initializeMaps() {
         // Initialization logic for priorityObjects, islands, levelRequirements
         // HashMap for priority objects with their level requirements
-        HashMap<String, Integer> priorityObjects = new HashMap<>();
+        priorityObjects = new HashMap<>();
         priorityObjects.put("Undead Soul", 95);
         priorityObjects.put("Living soul", 90);
         priorityObjects.put("Bloody skulls", 83);
@@ -70,8 +70,7 @@ public class SkeletonScript extends LoopingScript {
         Area.Rectangular Island_13 = new Area.Rectangular(new Coordinate(4325, 6055, 1), new Coordinate(4365, 6037, 1));
         Area.Rectangular Island_29 = new Area.Rectangular(new Coordinate(4371, 6086, 1), new Coordinate(4385, 6070, 1));
 
-        // HashMap for the islands
-        HashMap<String, Area> islands = new HashMap<>();
+        islands = new HashMap<>();
         islands.put("Island_Low_1", Island_1);
         islands.put("Island_Low_16", Island_16);
         islands.put("Island_Mid__5", Island_5);
@@ -79,8 +78,7 @@ public class SkeletonScript extends LoopingScript {
         islands.put("Island_High_13", Island_13);
         islands.put("Island_High_29", Island_29);
 
-        // HashMap for level requirements
-        HashMap<String, Integer> levelRequirements = new HashMap<>();
+        levelRequirements = new HashMap<>();
         levelRequirements.put("Island_Low_1", 1);
         levelRequirements.put("Island_Low_16", 9);
         levelRequirements.put("Island_Mid__5", 33);
@@ -122,7 +120,7 @@ public class SkeletonScript extends LoopingScript {
         }
     }
 
-    private long tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
+    private void tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
         println("Attempting to interact with objects in " + currentIsland);
 
         // Iterate through eligible objects in decreasing order of priority
@@ -139,7 +137,7 @@ public class SkeletonScript extends LoopingScript {
                     println("Found and interacting with: " + nearestObject.getName());
                     if (nearestObject.interact("Siphon")) {
                         Execution.delay(1000); // Wait for the interaction to complete
-                        return random.nextLong(1000, 3000); // Exit the method after successful interaction
+                        return; // Exit the method after successful interaction
                     }
                 } else {
                     println(objectName + " not found in the current island.");
@@ -150,7 +148,6 @@ public class SkeletonScript extends LoopingScript {
         }
 
         println("No eligible objects found for interaction in the current island.");
-        return random.nextLong(1000, 3000);
     }
 
     private Area determineCurrentIsland(LocalPlayer player) {
@@ -174,7 +171,7 @@ public class SkeletonScript extends LoopingScript {
     }
 
 
-    private long interactWithPriorityObjects(LocalPlayer player) {
+    private void interactWithPriorityObjects(LocalPlayer player) {
         println("Interacting with priority objects");
         Area currentIsland = determineCurrentIsland(player);
         println("Current Island: " + currentIsland.getArea());
@@ -184,7 +181,6 @@ public class SkeletonScript extends LoopingScript {
         } else {
             println("Player is not on any known island.");
         }
-        return random.nextLong(1000, 3000);
     }
 
     private boolean hasRune_Essence() {
