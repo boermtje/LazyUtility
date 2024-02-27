@@ -18,6 +18,7 @@ import net.botwithus.rs3.game.skills.Skills;
 import net.botwithus.rs3.game.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SkeletonScript extends LoopingScript {
 
@@ -189,7 +190,15 @@ public class SkeletonScript extends LoopingScript {
                 eligibleObjects.add(entry.getKey());
             }
         }
-        return eligibleObjects;
+        return priorityObjects.entrySet().stream()
+                // Filter to include only those objects for which player level is sufficient
+                .filter(entry -> playerLevel >= entry.getValue())
+                // Sort in reverse order by level requirement (highest first)
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                // Map each entry to its key (object name)
+                .map(Map.Entry::getKey)
+                // Collect the results into a list
+                .collect(Collectors.toList());
     }
 
     private boolean hasRune_Essence() {
