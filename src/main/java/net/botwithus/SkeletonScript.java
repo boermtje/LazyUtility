@@ -122,7 +122,7 @@ public class SkeletonScript extends LoopingScript {
         }
     }
 
-    private void tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
+    private long tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
         println("Attempting to interact with objects in " + currentIsland);
 
         // Iterate through eligible objects in decreasing order of priority
@@ -139,7 +139,7 @@ public class SkeletonScript extends LoopingScript {
                     println("Found and interacting with: " + nearestObject.getName());
                     if (nearestObject.interact("Siphon")) {
                         Execution.delay(1000); // Wait for the interaction to complete
-                        return; // Exit the method after successful interaction
+                        return random.nextLong(1000, 3000); // Exit the method after successful interaction
                     }
                 } else {
                     println(objectName + " not found in the current island.");
@@ -150,6 +150,7 @@ public class SkeletonScript extends LoopingScript {
         }
 
         println("No eligible objects found for interaction in the current island.");
+        return random.nextLong(1000, 3000);
     }
 
     private Area determineCurrentIsland(LocalPlayer player) {
@@ -173,7 +174,7 @@ public class SkeletonScript extends LoopingScript {
     }
 
 
-    private void interactWithPriorityObjects(LocalPlayer player) {
+    private long interactWithPriorityObjects(LocalPlayer player) {
         println("Interacting with priority objects");
         Area currentIsland = determineCurrentIsland(player);
         println("Current Island: " + currentIsland.getArea());
@@ -183,6 +184,7 @@ public class SkeletonScript extends LoopingScript {
         } else {
             println("Player is not on any known island.");
         }
+        return random.nextLong(1000, 3000);
     }
 
     private boolean hasRune_Essence() {
