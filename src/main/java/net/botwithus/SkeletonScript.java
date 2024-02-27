@@ -107,6 +107,15 @@ public class SkeletonScript extends LoopingScript {
         interactWithPriorityObjects(player);
     }
 
+    private boolean hasRune_Essence() {
+        ResultSet<Item> runeScan = InventoryItemQuery.newQuery(93).ids(24227).results();
+        Item rune = runeScan.first();
+        if (rune != null) {
+            return true;
+        }
+        return false;
+    }
+
     private void tryInteractWithNearestObject(Area currentIsland, List<String> eligibleObjects, LocalPlayer player) {
         println("Attempting to interact with objects in " + currentIsland);
 
@@ -115,9 +124,13 @@ public class SkeletonScript extends LoopingScript {
             Npc Floating_Essence = NpcQuery.newQuery().name("Floating essence").results().nearest();
             if (Floating_Essence != null) {
                 println("found");
+                Floating_Essence.interact("Collect");
+                println("Collecting Essence");
+                Execution.delay(RandomGenerator.nextInt(1000, 2000));
+                if (!hasRune_Essence()){
+                    return;
+                }
             }
-            Floating_Essence.interact("Collect");
-            println("Collecting Essence");
         }
 
         // First, check if the player is already interacting (animation ID 16596)
@@ -198,16 +211,6 @@ public class SkeletonScript extends LoopingScript {
                 // Collect the results into a list
                 .collect(Collectors.toList());
     }
-
-    private boolean hasRune_Essence() {
-        ResultSet<Item> runeScan = InventoryItemQuery.newQuery(93).ids(24227).results();
-        Item rune = runeScan.first();
-        if (rune != null) {
-            return true;
-        }
-        return false;
-    }
-
 
     /////////////////STATISTICS////////////////////
     //XP Gain & Level Gain base is set to zero,
