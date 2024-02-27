@@ -64,7 +64,7 @@ public class SkeletonScript extends LoopingScript {
         priorityObjects.put("Cyclone", 1);
 
         islands = new HashMap<>();
-        Area.Rectangular Island_1 = new Area.Rectangular(new Coordinate(3989, 6119, 1), new Coordinate(4007, 6119, 1));
+        Area.Rectangular Island_1 = new Area.Rectangular(new Coordinate(3989, 6095, 1), new Coordinate(4007, 6119, 1));
         islands.put("Island_Low_1", Island_1);
         Area.Rectangular Island_16 = new Area.Rectangular(new Coordinate(4055, 6093, 1), new Coordinate(4075, 6073, 1));
         islands.put("Island_Low_16", Island_16);
@@ -149,37 +149,41 @@ public class SkeletonScript extends LoopingScript {
         println("No eligible objects found for interaction in the current island.");
     }
 
+    private void interactWithPriorityObjects(LocalPlayer player) {
+        println("Starting interaction with priority objects");
+        Area currentIsland = determineCurrentIsland(player);
+        println("Determined current island: " + (currentIsland != null ? currentIsland.getArea() : "None"));
+        if (currentIsland != null) {
+            List<String> eligibleObjects = getEligibleObjects(player);
+            println("Eligible objects determined: " + eligibleObjects);
+            tryInteractWithNearestObject(currentIsland, eligibleObjects, player);
+        } else {
+            println("Player is not on any known island.");
+        }
+    }
+
     private Area determineCurrentIsland(LocalPlayer player) {
         for (Map.Entry<String, Area> entry : islands.entrySet()) {
+            println("Checking island: " + entry.getKey());
             if (entry.getValue().contains(player.getCoordinate())) {
+                println("Player is on island: " + entry.getKey());
                 return entry.getValue();
             }
         }
-        return null; // Player is not on any known island
+        println("Player is not on any known island");
+        return null;
     }
 
     private List<String> getEligibleObjects(LocalPlayer player) {
         int playerLevel = Skills.RUNECRAFTING.getLevel();
         List<String> eligibleObjects = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : priorityObjects.entrySet()) {
-            if (playerLevel >= entry.getValue()) { // This ensures objects with level <= playerLevel are included
+            println("Checking if player level " + playerLevel + " is >= " + entry.getValue() + " for " + entry.getKey());
+            if (playerLevel >= entry.getValue()) {
                 eligibleObjects.add(entry.getKey());
             }
         }
         return eligibleObjects;
-    }
-
-
-    private void interactWithPriorityObjects(LocalPlayer player) {
-        println("Interacting with priority objects");
-        Area currentIsland = determineCurrentIsland(player);
-        println("Current Island: " + currentIsland.getArea());
-        if (currentIsland != null) {
-            List<String> eligibleObjects = getEligibleObjects(player);
-            tryInteractWithNearestObject(currentIsland, eligibleObjects, player);
-        } else {
-            println("Player is not on any known island.");
-        }
     }
 
     private boolean hasRune_Essence() {
