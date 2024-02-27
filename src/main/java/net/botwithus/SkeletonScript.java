@@ -63,19 +63,18 @@ public class SkeletonScript extends LoopingScript {
         priorityObjects.put("Mind storm", 1);
         priorityObjects.put("Cyclone", 1);
 
-        Area.Rectangular Island_1 = new Area.Rectangular(new Coordinate(3989, 6119, 1), new Coordinate(4007, 6119, 1));
-        Area.Rectangular Island_16 = new Area.Rectangular(new Coordinate(3990, 6067, 1), new Coordinate(4014, 6041, 1));
-        Area.Rectangular Island_5 = new Area.Rectangular(new Coordinate(4125, 6093, 1), new Coordinate(4146, 6068, 1));
-        Area.Rectangular Island_23 = new Area.Rectangular(new Coordinate(4191, 6108, 1), new Coordinate(4204, 6085, 1));
-        Area.Rectangular Island_13 = new Area.Rectangular(new Coordinate(4325, 6055, 1), new Coordinate(4365, 6037, 1));
-        Area.Rectangular Island_29 = new Area.Rectangular(new Coordinate(4371, 6086, 1), new Coordinate(4385, 6070, 1));
-
         islands = new HashMap<>();
+        Area.Rectangular Island_1 = new Area.Rectangular(new Coordinate(3989, 6119, 1), new Coordinate(4007, 6119, 1));
         islands.put("Island_Low_1", Island_1);
+        Area.Rectangular Island_16 = new Area.Rectangular(new Coordinate(4055, 6093, 1), new Coordinate(4075, 6073, 1));
         islands.put("Island_Low_16", Island_16);
+        Area.Rectangular Island_5 = new Area.Rectangular(new Coordinate(4125, 6093, 1), new Coordinate(4146, 6068, 1));
         islands.put("Island_Mid__5", Island_5);
+        Area.Rectangular Island_23 = new Area.Rectangular(new Coordinate(4191, 6108, 1), new Coordinate(4204, 6085, 1));
         islands.put("Island_Mid_23", Island_23);
+        Area.Rectangular Island_13 = new Area.Rectangular(new Coordinate(4325, 6055, 1), new Coordinate(4365, 6037, 1));
         islands.put("Island_High_13", Island_13);
+        Area.Rectangular Island_29 = new Area.Rectangular(new Coordinate(4371, 6086, 1), new Coordinate(4385, 6070, 1));
         islands.put("Island_High_29", Island_29);
 
         levelRequirements = new HashMap<>();
