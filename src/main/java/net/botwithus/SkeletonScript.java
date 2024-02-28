@@ -26,6 +26,7 @@ public class SkeletonScript extends LoopingScript {
     private BotState botState = BotState.IDLE;
     private Random random = new Random();
     private HashMap<String, Integer> priorityObjects;
+    private HashMap<String, Integer> priorityNPCs;
     private HashMap<String, Area> islands;
     private HashMap<String, Integer> levelRequirements;
 
@@ -49,32 +50,34 @@ public class SkeletonScript extends LoopingScript {
         priorityObjects = new HashMap<>();
         priorityObjects.put("Undead Soul", 95);
         priorityObjects.put("Living soul", 90);
-        priorityObjects.put("Soul esshound", 90);
         priorityObjects.put("Bloody skulls", 83);
         priorityObjects.put("Blood pool", 77);
-        priorityObjects.put("Blood esshound", 77);
         priorityObjects.put("Skulls", 65);
-        priorityObjects.put("Death esswraith", 65);
         priorityObjects.put("Jumper", 54);
-        priorityObjects.put("Law esshound", 54);
         priorityObjects.put("Shifter", 44);
-        priorityObjects.put("Nature esshound", 44);
         priorityObjects.put("Nebula", 40);
-        priorityObjects.put("Astral esshound", 40);
         priorityObjects.put("Chaotic cloud", 35);
-        priorityObjects.put("Chaos esshound", 35);
         priorityObjects.put("Fire storm", 27);
-        priorityObjects.put("Cosmic esshound", 27);
         priorityObjects.put("Fleshy growth", 20);
-        priorityObjects.put("Body esshound", 20);
         priorityObjects.put("Vine", 17);
         priorityObjects.put("Fireball", 14);
-        priorityObjects.put("Fire essling", 14);
         priorityObjects.put("Rock fragment", 9);
-        priorityObjects.put("Earth essling", 9);
         priorityObjects.put("Water pool", 5);
         priorityObjects.put("Mind storm", 1);
         priorityObjects.put("Cyclone", 1);
+
+        priorityNPCs = new HashMap<>();
+        priorityNPCs.put("Earth essling", 9);
+        priorityNPCs.put("Fire essling", 14);
+        priorityNPCs.put("Body essling", 20);
+        priorityNPCs.put("Cosmic esshound", 27);
+        priorityNPCs.put("Chaos esshound", 35);
+        priorityNPCs.put("Astral esshound", 40);
+        priorityNPCs.put("Nature esshound", 44);
+        priorityNPCs.put("Law esshound", 54);
+        priorityNPCs.put("Death esswraith", 65);
+        priorityNPCs.put("Blood esshound", 77);
+        priorityNPCs.put("Soul esshound", 90);
 
         islands = new HashMap<>();
         Area.Rectangular Island_1 = new Area.Rectangular(new Coordinate(3989, 6095, 1), new Coordinate(4007, 6119, 1));
