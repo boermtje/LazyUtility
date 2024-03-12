@@ -74,14 +74,7 @@ public class SkeletonScript extends LoopingScript {
             int z = 0;
             Coordinate marker = new Coordinate(x, y, z);
             println(marker);
-            if (botState == BotState.IDLE) {
-                print("Pressed stop");
-                NavPath.resolve(marker).interrupt(traverseEvent -> {
-                    println("Interrupted");
-                    return false;
-                });
-                return random.nextLong(1000, 3000);
-            }
+            NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE);
             if (Movement.traverse(NavPath.resolve(marker)) == TraverseEvent.State.FINISHED) {
                 println("Traversed to marker");
                 botState = BotState.IDLE;
