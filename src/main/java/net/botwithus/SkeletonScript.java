@@ -1,5 +1,6 @@
 package net.botwithus;
 
+import net.botwithus.api.game.hud.Dialog;
 import net.botwithus.internal.scripts.ScriptDefinition;
 import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.js5.types.vars.VarDomainType;
@@ -28,6 +29,7 @@ import java.util.*;
 public class SkeletonScript extends LoopingScript {
 
     private BotState botState = BotState.IDLE;
+    private SkeletonScriptGraphicsContext graphics;
     private Random random = new Random();
 
     /////////////////////////////////////Botstate//////////////////////////
@@ -63,8 +65,10 @@ public class SkeletonScript extends LoopingScript {
                 Execution.delay(random.nextLong(1000, 3000));
             }
             case GOTOMARKER -> {
-                //do some code that handles your skilling
                 Execution.delay(GoToMarker());
+            }
+            case AUTODIALOG -> {
+                Execution.delay(AutoDialog());
             }
         }
     }
@@ -86,18 +90,49 @@ public class SkeletonScript extends LoopingScript {
         return new Coordinate(x, y, z);
     }
 
-        private long GoToMarker() {
-            Coordinate marker = resolveMarker();
-            println(marker);
-            if (Movement.traverse(NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
-                println("Traversed to marker");
-                botState = BotState.IDLE;
+    private long AutoDialog() {
+        int[] dialogOptions = graphics.getDialogOptions(); // Assuming sgc is an instance of SkeletonScriptGraphicsContext
+        int dialogIndex = 0; // Start from the first dialog option
+        int interactionCount = 0; // Keep track of the number of interactions
+
+        while (Dialog.isOpen()) {
+            int result = Dialog.select(dialogIndex);
+            if (result < 0) {
+                // When the dialog selection returns negative, interact with the corresponding dialog option
+                // and then reset the index to continue with the next dialog interaction
+                if (dialogOptions[interactionCount] != 0) { // If the dialog option is not 0
+                    Dialog.interact(String.valueOf(dialogOptions[interactionCount]));
+                    interactionCount++; // Move to the next interaction
+                    if (interactionCount >= dialogOptions.length) {
+                        break; // All dialog options have been exhausted
+                    }
+                }
+                dialogIndex = 0; // Reset index after an interaction
+            } else {
+                dialogIndex++; // Move to the next dialog option if possible
             }
-            else {
-                println("Failed to traverse to marker");
-            }
-            return random.nextLong(1000, 3000);
         }
+
+        if (!Dialog.isOpen()) {
+            // Dialog interaction finished or was never open, return to regular processing
+            setBotState(BotState.IDLE); // Or another appropriate state
+        }
+
+        return random.nextLong(1000, 3000); // Return some delay before the next action
+    }
+
+    private long GoToMarker() {
+        Coordinate marker = resolveMarker();
+        println(marker);
+        if (Movement.traverse(NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+            println("Traversed to marker");
+            botState = BotState.IDLE;
+        }
+        else {
+            println("Failed to traverse to marker");
+        }
+        return random.nextLong(1000, 3000);
+    }
 
 
     ////////////////////Botstate/////////////////////
