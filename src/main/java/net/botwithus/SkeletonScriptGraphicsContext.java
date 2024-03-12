@@ -94,6 +94,21 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             System.err.println("Invalid input: X, Y, and Z values must be integers.");
                         }
 
+                        // Text input for the save name
+                        String nameInput = saveName.toString();
+                        ImGui.InputText("Name", nameInput);
+                        saveName.setLength(0); // Clear the StringBuilder
+                        saveName.append(nameInput); // Append the new input from ImGui
+
+
+                        if (ImGui.Button("Save")) {
+                            // Only save if there is a name entered
+                            if (saveName.length() > 0) {
+                                savedLocations.put(saveName.toString(), new int[]{xInput.get(), yInput.get(), zInput.get()});
+                                saveName.setLength(0); // Clear after saving
+                            }
+                        }
+
                         // Displaying saved locations as buttons
                         for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
                             if (ImGui.Button(entry.getKey())) {
