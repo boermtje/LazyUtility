@@ -107,12 +107,14 @@ public class SkeletonScript extends LoopingScript {
 
         while (Dialog.isOpen()) {
             println("Attempting to select a dialog option...");
+            Execution.delay(random.nextLong(1000,1758));
             boolean selectionMade = Dialog.select(); // Call select() without parameters
             if (!selectionMade) {
                 println("No more selections could be made.");
                 // When there are no more dialog options to select, interact with the corresponding dialog option
                 if (interactionCount < dialogOptions.length && dialogOptions[interactionCount] != 0) {
                     println("Interacting with dialog option: " + dialogOptions[interactionCount]);
+                    Execution.delay(random.nextLong(1000,1758));
                     Dialog.interact(String.valueOf(dialogOptions[interactionCount]));
                     interactionCount++; // Move to the next interaction
                     if (interactionCount >= dialogOptions.length) {
@@ -125,6 +127,7 @@ public class SkeletonScript extends LoopingScript {
                         break;
                     }
                     println("Re-selecting after interaction.");
+                    Execution.delay(random.nextLong(1000,1758));
                     Dialog.select(); // Attempt to select the next option after interaction
                 } else {
                     // All dialog options have been exhausted or are set to 0, exit the loop
