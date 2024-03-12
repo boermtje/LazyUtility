@@ -28,6 +28,7 @@ import java.util.*;
 
 public class SkeletonScript extends LoopingScript {
 
+    public int gotoX, gotoY, gotoZ;
     private int[] dialogOptions; // Add this field
 
     // Add methods to set and get dialogOptions
@@ -47,7 +48,7 @@ public class SkeletonScript extends LoopingScript {
         IDLE,
         GOTOMARKER,
         AUTODIALOG,
-
+        GOTOXYZ,
         //...
     }
 
@@ -77,7 +78,7 @@ public class SkeletonScript extends LoopingScript {
                 Execution.delay(GoToMarker());
             }
             case AUTODIALOG -> {
-                Execution.delay(AutoDialog());
+                Execution.delay(handleGotoXYZ());
             }
         }
     }
@@ -97,6 +98,22 @@ public class SkeletonScript extends LoopingScript {
         int y = tileHash & 0x3fff;
         int z = (tileHash >> 28) & 0x3;
         return new Coordinate(x, y, z);
+    }
+
+    public Coordinate resolveXYZ() {
+        return new Coordinate(gotoX, gotoY, gotoZ);
+    }
+
+    private long handleGotoXYZ() {
+        Coordinate xyz = resolveXYZ();
+        if (Movement.traverse(NavPath.resolve(xyz).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+            println("Traversed to XYZ");
+            botState = BotState.IDLE;
+        }
+        else {
+            println("Failed to traverse to XYZ");
+        }
+        return random.nextLong(1000, 3000);
     }
 
     private long AutoDialog() {
