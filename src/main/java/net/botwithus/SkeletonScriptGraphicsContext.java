@@ -24,13 +24,10 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
     private NativeInteger xInput = new NativeInteger(0);
     private NativeInteger yInput = new NativeInteger(0);
     private NativeInteger zInput = new NativeInteger(0);
-    private StringBuilder saveName = new StringBuilder(64); // StringBuilder for mutable text
+    private String saveName = ""; // For saving location names
     private Map<String, int[]> savedLocations = new HashMap<>(); // Map to store named locations
     public int[] dialogOptions = new int[9];
     private SkeletonScript script;
-    // Buffer for the location name input, with a reasonable size for input
-    private final int NAME_BUFFER_SIZE = 64;
-    private byte[] nameBuffer = new byte[NAME_BUFFER_SIZE];
 
     class MutableInt {
         public int value;
@@ -94,32 +91,34 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             System.err.println("Invalid input: X, Y, and Z values must be integers.");
                         }
 
-                        // Text input for the save name
-                        String nameInput = saveName.toString();
-                        ImGui.InputText("Name", nameInput);
-                        saveName.setLength(0); // Clear the StringBuilder
-                        saveName.append(nameInput); // Append the new input from ImGui
-
-
-                        if (ImGui.Button("Save")) {
-                            // Only save if there is a name entered
-                            if (saveName.length() > 0) {
-                                savedLocations.put(saveName.toString(), new int[]{xInput.get(), yInput.get(), zInput.get()});
-                                saveName.setLength(0); // Clear after saving
-                            }
-                        }
-
-                        // Displaying saved locations as buttons
-                        for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
-                            if (ImGui.Button(entry.getKey())) {
-                                // Load and use the saved XYZ coordinates
-                                int[] coords = entry.getValue();
-                                script.gotoX = coords[0];
-                                script.gotoY = coords[1];
-                                script.gotoZ = coords[2];
-                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
-                            }
-                        }
+//                        // Save functionality
+//                        ImGui.InputText("Name", saveName); // Removed the flag
+//                        if (ImGui.Button("Save")) {
+//                            // Save the current XYZ inputs with the provided name
+//                            savedLocations.put(saveName, new int[]{xInput.get(), yInput.get(), zInput.get()});
+//                            saveName = ""; // Reset save name for next input
+//                        }
+//
+//                        // List saved locations as buttons
+//                        for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
+//                            if (ImGui.Button(entry.getKey())) {
+//                                // Handle the "Go To" action in the script with the saved coordinates
+//                                script.resolveXYZ();
+//                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
+//                            }
+//                        }
+//
+//                        // Displaying saved locations as buttons
+//                        for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
+//                            if (ImGui.Button(entry.getKey())) {
+//                                // Load and use the saved XYZ coordinates
+//                                int[] coords = entry.getValue();
+//                                script.gotoX = coords[0];
+//                                script.gotoY = coords[1];
+//                                script.gotoZ = coords[2];
+//                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
+//                            }
+//                        }
                         ImGui.EndTabItem();
                     }
 
@@ -165,21 +164,6 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                 ImGui.End();
             }
         }
-
-    // Helper method to extract a string from a ByteBuffer
-    private String extractString(ByteBuffer buffer) {
-        byte[] bytes;
-        int oldPosition = buffer.position();
-        buffer.flip();
-        if (buffer.hasRemaining()) {
-            bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-        } else {
-            bytes = new byte[0];
-        }
-        buffer.position(oldPosition);
-        return new String(bytes, StandardCharsets.UTF_8).trim();
-    }
 
     // Call this method to get the options selected by the user
     public void updateDialogOptionsInScript() {
