@@ -15,6 +15,11 @@ import java.util.Map;
 
 public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
 
+
+    // Single-element arrays to hold integer values for ImGui input
+    private String xInputText = "0";
+    private String yInputText = "0";
+    private String zInputText = "0";
     // New fields for storing XYZ coordinates and saved locations
     private NativeInteger xInput = new NativeInteger(0);
     private NativeInteger yInput = new NativeInteger(0);
@@ -27,10 +32,18 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
     private final int NAME_BUFFER_SIZE = 64;
     private byte[] nameBuffer = new byte[NAME_BUFFER_SIZE];
 
+    class MutableInt {
+        public int value;
+
+        public MutableInt(int value) {
+            this.value = value;
+        }
+    }
+
     public SkeletonScriptGraphicsContext(ScriptConsole scriptConsole, SkeletonScript script) {
         super(scriptConsole);
         this.script = script;
-
+        // Initialize arrays with current values
     }
 
         @Override
@@ -52,38 +65,33 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                         ImGui.Text("Player " + script.resolvePlayerCoords());
 
 
-                        // Temporary variables to hold integer values for ImGui input
-                        int tempX = xInput.get();
-                        int tempY = yInput.get();
-                        int tempZ = zInput.get();
 
-                        // Inputfields for X, Y, and Z coordinates
-                        ImGui.InputInt("X", tempX);
-                        xInput.set(tempX); // Update the NativeInteger with the new value
-                        ImGui.InputInt("Y", tempY);
-                        yInput.set(tempY); // Update the NativeInteger with the new value
-                        ImGui.InputInt("Z", tempZ);
-                        zInput.set(tempZ); // Update the NativeInteger with the new value
+                        // Text input fields for X, Y, and Z coordinates
+                        xInputText = ImGui.InputText("X", xInputText);
+                        yInputText = ImGui.InputText("Y", yInputText);
+                        zInputText = ImGui.InputText("Z", zInputText);
 
-                        // "Go To" button
-                        if (ImGui.Button("Go To")) {
-                            // Handle the "Go To" action in the script
-                            script.setBotState(SkeletonScript.BotState.GOTOXYZ);
-                        }
+                        // Parse integers from text inputs
+                        try {
+                            int x = Integer.parseInt(xInputText);
+                            int y = Integer.parseInt(yInputText);
+                            int z = Integer.parseInt(zInputText);
 
-                        // Text input for the save name
-                        String nameInput = saveName.toString();
-                        ImGui.InputText("Name", nameInput);
-                        saveName.setLength(0); // Clear the StringBuilder
-                        saveName.append(nameInput); // Append the new input from ImGui
+                            // Update the NativeInteger fields
+                            xInput.set(x);
+                            yInput.set(y);
+                            zInput.set(z);
 
-
-                        if (ImGui.Button("Save")) {
-                            // Only save if there is a name entered
-                            if (saveName.length() > 0) {
-                                savedLocations.put(saveName.toString(), new int[]{xInput.get(), yInput.get(), zInput.get()});
-                                saveName.setLength(0); // Clear after saving
+                            // "Go To" button logic
+                            if (ImGui.Button("Go To")) {
+                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
+                                script.gotoX = x;
+                                script.gotoY = y;
+                                script.gotoZ = z;
                             }
+                        } catch (NumberFormatException e) {
+                            // Handle invalid number formats
+                            System.err.println("Invalid input: X, Y, and Z values must be integers.");
                         }
 
                         // Displaying saved locations as buttons
