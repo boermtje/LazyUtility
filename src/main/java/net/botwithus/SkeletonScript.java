@@ -67,22 +67,23 @@ public class SkeletonScript extends LoopingScript {
         }
     }
 
-        private long GoToMarker() {
-            int tileHash = VarManager.getVarValue(VarDomainType.PLAYER, 2807);
-            int x = (tileHash >> 14) & 0x3fff;
-            int y = tileHash & 0x3fff;
-            int z = 0;
-            Coordinate marker = new Coordinate(x, y, z);
-            println(marker);
-            NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE);
-            if (Movement.traverse(NavPath.resolve(marker)) == TraverseEvent.State.FINISHED) {
-                println("Traversed to marker");
-                botState = BotState.IDLE;
-            } else {
+
+    int tileHash = VarManager.getVarValue(VarDomainType.PLAYER, 2807);
+    int x = (tileHash >> 14) & 0x3fff;
+    int y = tileHash & 0x3fff;
+    int z = 0;
+    Coordinate marker = new Coordinate(x, y, z);
+
+    private long GoToMarker() {
+        println(marker);
+        if (Movement.traverse(NavPath.resolve(marker)) == TraverseEvent.State.FINISHED) {
+            println("Traversed to marker");
+            botState = BotState.IDLE;
+        } else {
                 println("Failed to traverse to marker");
-            }
-            return random.nextLong(1000, 3000);
         }
+            return random.nextLong(1000, 3000);
+    }
 
 
     ////////////////////Botstate/////////////////////
