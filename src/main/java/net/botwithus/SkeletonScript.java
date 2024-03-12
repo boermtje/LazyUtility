@@ -78,6 +78,9 @@ public class SkeletonScript extends LoopingScript {
                 Execution.delay(GoToMarker());
             }
             case AUTODIALOG -> {
+                Execution.delay(AutoDialog());
+            }
+            case GOTOXYZ -> {
                 Execution.delay(handleGotoXYZ());
             }
         }
@@ -106,11 +109,13 @@ public class SkeletonScript extends LoopingScript {
 
     private long handleGotoXYZ() {
         Coordinate xyz = resolveXYZ();
+        println("Navigating to coordinates: " + xyz);
         if (Movement.traverse(NavPath.resolve(xyz).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
             println("Traversed to XYZ");
             botState = BotState.IDLE;
         }
         else {
+            print(xyz);
             println("Failed to traverse to XYZ");
         }
         return random.nextLong(1000, 3000);

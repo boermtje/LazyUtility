@@ -15,7 +15,11 @@ import java.util.Map;
 
 public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
 
-
+    public void updateXYZCoordinates() {
+        script.gotoX = xInput.get();
+        script.gotoY = yInput.get();
+        script.gotoZ = zInput.get();
+    }
     // Single-element arrays to hold integer values for ImGui input
     private String xInputText = "0";
     private String yInputText = "0";
@@ -24,18 +28,10 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
     private NativeInteger xInput = new NativeInteger(0);
     private NativeInteger yInput = new NativeInteger(0);
     private NativeInteger zInput = new NativeInteger(0);
-    private String saveName = ""; // For saving location names
-    private Map<String, int[]> savedLocations = new HashMap<>(); // Map to store named locations
+//    private String saveName = ""; // For saving location names
+//    private Map<String, int[]> savedLocations = new HashMap<>(); // Map to store named locations
     public int[] dialogOptions = new int[9];
     private SkeletonScript script;
-
-    class MutableInt {
-        public int value;
-
-        public MutableInt(int value) {
-            this.value = value;
-        }
-    }
 
     public SkeletonScriptGraphicsContext(ScriptConsole scriptConsole, SkeletonScript script) {
         super(scriptConsole);
@@ -80,11 +76,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             zInput.set(z);
 
                             // "Go To" button logic
-                            if (ImGui.Button("Go To")) {
+                            if (ImGui.Button("Go To X,Y,Z")) {
+                                updateXYZCoordinates();
                                 script.setBotState(SkeletonScript.BotState.GOTOXYZ);
-                                script.gotoX = x;
-                                script.gotoY = y;
-                                script.gotoZ = z;
                             }
                         } catch (NumberFormatException e) {
                             // Handle invalid number formats
