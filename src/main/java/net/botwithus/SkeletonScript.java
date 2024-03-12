@@ -95,18 +95,25 @@ public class SkeletonScript extends LoopingScript {
         int interactionCount = 0; // Keep track of the number of interactions
 
         while (Dialog.isOpen()) {
-            int result = Dialog.select(); // Call select() without parameters
-            if (result < 0) {
-                // When the dialog selection returns negative, interact with the corresponding dialog option
+            boolean selectionMade = Dialog.select(); // Call select() without parameters
+            if (!selectionMade) {
+                // When there are no more dialog options to select, interact with the corresponding dialog option
                 if (interactionCount < dialogOptions.length && dialogOptions[interactionCount] != 0) {
                     Dialog.interact(String.valueOf(dialogOptions[interactionCount]));
                     interactionCount++; // Move to the next interaction
+                    if (interactionCount >= dialogOptions.length) {
+                        break; // All dialog options have been exhausted
+                    }
+                    // Ensure the dialog is still open before attempting to select again
+                    if (!Dialog.isOpen()) {
+                        break;
+                    }
+                    Dialog.select(); // Attempt to select the next option after interaction
                 } else {
                     // All dialog options have been exhausted or are set to 0, exit the loop
                     break;
                 }
             }
-            // If the select method automatically selects the next option, you don't need to increment any index
         }
 
         if (!Dialog.isOpen()) {
