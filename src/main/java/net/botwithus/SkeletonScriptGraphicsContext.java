@@ -1,15 +1,11 @@
 package net.botwithus;
 
-import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.imgui.ImGuiWindowFlag;
 import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
-import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,12 +20,12 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
     private String xInputText = "0";
     private String yInputText = "0";
     private String zInputText = "0";
+    private String saveName = "SaveName";
     // New fields for storing XYZ coordinates and saved locations
     private NativeInteger xInput = new NativeInteger(0);
     private NativeInteger yInput = new NativeInteger(0);
     private NativeInteger zInput = new NativeInteger(0);
-//    private String saveName = ""; // For saving location names
-//    private Map<String, int[]> savedLocations = new HashMap<>(); // Map to store named locations
+    private Map<String, int[]> savedLocations = new HashMap<>(); // Map to store named locations
     public int[] dialogOptions = new int[9];
     private SkeletonScript script;
 
@@ -85,34 +81,27 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             System.err.println("Invalid input: X, Y, and Z values must be integers.");
                         }
 
-//                        // Save functionality
-//                        ImGui.InputText("Name", saveName); // Removed the flag
-//                        if (ImGui.Button("Save")) {
-//                            // Save the current XYZ inputs with the provided name
-//                            savedLocations.put(saveName, new int[]{xInput.get(), yInput.get(), zInput.get()});
-//                            saveName = ""; // Reset save name for next input
-//                        }
-//
-//                        // List saved locations as buttons
-//                        for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
-//                            if (ImGui.Button(entry.getKey())) {
-//                                // Handle the "Go To" action in the script with the saved coordinates
-//                                script.resolveXYZ();
-//                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
-//                            }
-//                        }
-//
-//                        // Displaying saved locations as buttons
-//                        for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
-//                            if (ImGui.Button(entry.getKey())) {
-//                                // Load and use the saved XYZ coordinates
-//                                int[] coords = entry.getValue();
-//                                script.gotoX = coords[0];
-//                                script.gotoY = coords[1];
-//                                script.gotoZ = coords[2];
-//                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
-//                            }
-//                        }
+                        // Save functionality
+                        saveName = ImGui.InputText("Name", saveName);
+                        if (ImGui.Button("Save")) {
+                            // Save the current XYZ inputs with the provided name
+                            savedLocations.put(saveName, new int[]{xInput.get(), yInput.get(), zInput.get()});
+                            saveName = ""; // Reset save name for next input
+                        }
+
+                        int count = 0;
+                        // List saved locations as buttons
+                        for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
+                            if (count % 3 != 0) {
+                                ImGui.SameLine();
+                            }
+                            if (ImGui.Button(entry.getKey())) {
+                                // Handle the "Go To" action in the script with the saved coordinates
+                                script.resolveXYZ();
+                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
+                            }
+                            count++;
+                        }
                         ImGui.EndTabItem();
                     }
 
