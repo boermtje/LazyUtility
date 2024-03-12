@@ -94,23 +94,32 @@ public class SkeletonScript extends LoopingScript {
         int[] dialogOptions = graphics.getDialogOptions(); // Assuming 'graphics' is an instance of SkeletonScriptGraphicsContext
         int interactionCount = 0; // Keep track of the number of interactions
 
+        println("Starting auto-dialog sequence.");
+
         while (Dialog.isOpen()) {
+            println("Attempting to select a dialog option...");
             boolean selectionMade = Dialog.select(); // Call select() without parameters
             if (!selectionMade) {
+                println("No more selections could be made.");
                 // When there are no more dialog options to select, interact with the corresponding dialog option
                 if (interactionCount < dialogOptions.length && dialogOptions[interactionCount] != 0) {
+                    println("Interacting with dialog option: " + dialogOptions[interactionCount]);
                     Dialog.interact(String.valueOf(dialogOptions[interactionCount]));
                     interactionCount++; // Move to the next interaction
                     if (interactionCount >= dialogOptions.length) {
+                        println("All dialog options have been exhausted.");
                         break; // All dialog options have been exhausted
                     }
                     // Ensure the dialog is still open before attempting to select again
                     if (!Dialog.isOpen()) {
+                        println("Dialog closed after interaction.");
                         break;
                     }
+                    println("Re-selecting after interaction.");
                     Dialog.select(); // Attempt to select the next option after interaction
                 } else {
                     // All dialog options have been exhausted or are set to 0, exit the loop
+                    println("Exiting dialog loop - either all options are exhausted or the current option is 0.");
                     break;
                 }
             }
@@ -118,7 +127,10 @@ public class SkeletonScript extends LoopingScript {
 
         if (!Dialog.isOpen()) {
             // Dialog interaction finished or was never open, return to regular processing
+            println("Dialog interaction has finished or was never open. Setting bot state to IDLE.");
             setBotState(BotState.IDLE); // Or another appropriate state
+        } else {
+            println("Dialog interaction complete.");
         }
 
         return random.nextLong(1000, 3000); // Return some delay before the next action
