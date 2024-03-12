@@ -91,26 +91,22 @@ public class SkeletonScript extends LoopingScript {
     }
 
     private long AutoDialog() {
-        int[] dialogOptions = graphics.getDialogOptions(); // Assuming sgc is an instance of SkeletonScriptGraphicsContext
-        int dialogIndex = 0; // Start from the first dialog option
+        int[] dialogOptions = graphics.getDialogOptions(); // Assuming 'graphics' is an instance of SkeletonScriptGraphicsContext
         int interactionCount = 0; // Keep track of the number of interactions
 
         while (Dialog.isOpen()) {
-            int result = Dialog.select(dialogIndex);
+            int result = Dialog.select(); // Call select() without parameters
             if (result < 0) {
                 // When the dialog selection returns negative, interact with the corresponding dialog option
-                // and then reset the index to continue with the next dialog interaction
-                if (dialogOptions[interactionCount] != 0) { // If the dialog option is not 0
+                if (interactionCount < dialogOptions.length && dialogOptions[interactionCount] != 0) {
                     Dialog.interact(String.valueOf(dialogOptions[interactionCount]));
                     interactionCount++; // Move to the next interaction
-                    if (interactionCount >= dialogOptions.length) {
-                        break; // All dialog options have been exhausted
-                    }
+                } else {
+                    // All dialog options have been exhausted or are set to 0, exit the loop
+                    break;
                 }
-                dialogIndex = 0; // Reset index after an interaction
-            } else {
-                dialogIndex++; // Move to the next dialog option if possible
             }
+            // If the select method automatically selects the next option, you don't need to increment any index
         }
 
         if (!Dialog.isOpen()) {
