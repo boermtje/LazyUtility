@@ -38,9 +38,8 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
             }
             ImGui.End();
         }
+    }
 
     @Override
-    public void drawOverlay() {
-        super.drawOverlay();
-    }
+    public void drawOverlay() { super.drawOverlay(); }
 }

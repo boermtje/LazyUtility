@@ -71,9 +71,19 @@ public class SkeletonScript extends LoopingScript {
             int tileHash = VarManager.getVarValue(VarDomainType.PLAYER, 2807);
             int x = (tileHash >> 14) & 0x3fff;
             int y = tileHash & 0x3fff;
-            int z = (tileHash >> 28) & 0x3;
+            int z = 0;
             Coordinate marker = new Coordinate(x, y, z);
+            println(marker);
+            if (botState == BotState.IDLE) {
+                print("Pressed stop");
+                NavPath.resolve(marker).interrupt(traverseEvent -> {
+                    println("Interrupted");
+                    return false;
+                });
+                return random.nextLong(1000, 3000);
+            }
             if (Movement.traverse(NavPath.resolve(marker)) == TraverseEvent.State.FINISHED) {
+                println("Traversed to marker");
                 botState = BotState.IDLE;
             } else {
                 println("Failed to traverse to marker");
