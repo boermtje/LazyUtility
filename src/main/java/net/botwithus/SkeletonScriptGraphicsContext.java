@@ -2,8 +2,11 @@ package net.botwithus;
 
 import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.imgui.ImGuiWindowFlag;
+import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
+
+import java.util.ArrayList;
 
 public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
 
@@ -21,9 +24,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                 if (ImGui.BeginTabItem("Settings", ImGuiWindowFlag.None.getValue())) {
                     ImGui.Text("Welcome to my script!");
                     ImGui.Text("My scripts state is: " + script.getBotState());
-                    if (ImGui.Button("Start")) {
+                    if (ImGui.Button("Go to marker")) {
                         //button has been clicked
-                        script.setBotState(SkeletonScript.BotState.SKILLING);
+                        script.setBotState(SkeletonScript.BotState.GOTOMARKER);
                     }
                     ImGui.SameLine();
                     if (ImGui.Button("Stop")) {
@@ -32,26 +35,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                     }
                     ImGui.EndTabItem();
                 }
-                if (ImGui.BeginTabItem("Instructions", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("Go to which Runespan island you want to farm on.");
-                    ImGui.Text("Start the bot and let it do the rest");
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem("Stats", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("Time Passed: " + script.timePassed());
-                    ImGui.Text("TTL: " + script.ttl());
-                    ImGui.Text("XP Gained: " + script.xpGained());
-                    ImGui.Text("Levels Gained: " + script.levelsGained());
-                    ImGui.Text("XP/HR: " + script.xpPerHour());
-                    ImGui.EndTabItem();
-                }
-                ImGui.EndTabBar();
             }
             ImGui.End();
         }
-
-    }
 
     @Override
     public void drawOverlay() {
