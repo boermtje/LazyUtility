@@ -102,12 +102,14 @@ public class SkeletonScript extends LoopingScript {
     private long AutoDialog() {
         int[] dialogOptions = getDialogOptions(); // Retrieve dialog options
         int interactionCount = 0;
+        long startTime = System.currentTimeMillis(); // Record the start time
+        long timeout = 10000; // 10 seconds timeout
 
         println("Starting auto-dialog sequence.");
 
-        while (Dialog.isOpen()) {
+        while (Dialog.isOpen() && (System.currentTimeMillis() - startTime) < timeout) {
             println("Attempting to select a dialog option...");
-            Execution.delay(random.nextLong(1000,1758));
+            Execution.delay(random.nextLong(1000, 1758));
 
             boolean selectionMade = Dialog.select(); // Select without parameters
             if (!selectionMade) {
@@ -115,33 +117,38 @@ public class SkeletonScript extends LoopingScript {
 
                 if (interactionCount < dialogOptions.length && dialogOptions[interactionCount] != 0) {
                     println("Interacting with dialog option: " + dialogOptions[interactionCount]);
-
-                    Execution.delay(random.nextLong(1000,1758));
+                    Execution.delay(random.nextLong(1000, 1758));
                     Dialog.interact(String.valueOf(dialogOptions[interactionCount]));
-                    interactionCount++; // Increment interaction count
-
-                    if (interactionCount >= dialogOptions.length || !Dialog.isOpen()) {
-                        println("Dialog closed or all options exhausted. Changing to IDLE state.");
-                        setBotState(BotState.IDLE); // Change bot state to IDLE
-                        break;
-                    }
-
-                    println("Re-selecting after interaction.");
-                    Execution.delay(random.nextLong(1000,1758));
-                    Dialog.select(); // Attempt next selection
+                    interactionCount++; // Move to next interaction
                 } else {
-                    println("Exiting dialog loop - either all options are exhausted or the current option is 0.");
-                    setBotState(BotState.IDLE); // Change bot state to IDLE
+                    println("Exiting dialog loop - either all options are exhausted or current option is 0.");
+                    setBotState(BotState.IDLE); // Change state to IDLE
                     break;
                 }
             }
+
+            // Additional check for dialog closure
+            if (!Dialog.isOpen()) {
+                println("Dialog closed after interaction.");
+                setBotState(BotState.IDLE); // Change state to IDLE
+                break;
+            }
+
+            // Timeout check
+            if ((System.currentTimeMillis() - startTime) >= timeout) {
+                println("AutoDialog timeout reached. Exiting.");
+                setBotState(BotState.IDLE); // Change state to IDLE
+                break;
+            }
         }
 
-        if (!Dialog.isOpen()) {
-            println("Dialog interaction has finished or was never open. Changing to IDLE state.");
-            setBotState(BotState.IDLE); // Change bot state to IDLE
-        } else {
-            println("Dialog interaction complete.");
+        // Additional post-loop handling
+        if (!Dialog.isOpen() && interactionCount < dialogOptions.length) {
+            println("Dialog closed unexpectedly. Changing to IDLE state.");
+            setBotState(BotState.IDLE); // Change state to IDLE
+        } else if (!Dialog.isOpen()) {
+            println("Dialog interaction complete. Changing to IDLE state.");
+            setBotState(BotState.IDLE); // Change state to IDLE
         }
 
         return random.nextLong(1000, 3000);
