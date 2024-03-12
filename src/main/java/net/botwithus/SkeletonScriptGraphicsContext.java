@@ -42,9 +42,15 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                         ImGui.EndTabItem();
                     }
                     if (ImGui.BeginTabItem("Auto Dialog", ImGuiWindowFlag.None.getValue())) {
+                        ImGui.Text("My scripts state is: " + script.getBotState());
                         if (ImGui.Button("Auto Dialog")) {
                             //has been clicked
                             script.setBotState(SkeletonScript.BotState.AUTODIALOG);
+                        }
+                        ImGui.SameLine();
+                        if (ImGui.Button("Stop")) {
+                            //has been clicked
+                            script.setBotState(SkeletonScript.BotState.IDLE);
                         }
                         for (int i = 0; i < dialogOptions.length; i++) {
                             int dialogOption = dialogOptions[i]; // Temp copy for modification

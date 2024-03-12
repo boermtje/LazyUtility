@@ -29,8 +29,8 @@ import java.util.*;
 public class SkeletonScript extends LoopingScript {
 
     private BotState botState = BotState.IDLE;
-    private SkeletonScriptGraphicsContext graphics;
     private Random random = new Random();
+    private SkeletonScriptGraphicsContext sgc;
 
     /////////////////////////////////////Botstate//////////////////////////
     enum BotState {
@@ -91,7 +91,7 @@ public class SkeletonScript extends LoopingScript {
     }
 
     private long AutoDialog() {
-        int[] dialogOptions = graphics.getDialogOptions(); // Assuming 'graphics' is an instance of SkeletonScriptGraphicsContext
+        int[] dialogOptions = sgc.getDialogOptions(); // Assuming 'graphics' is an instance of SkeletonScriptGraphicsContext
         int interactionCount = 0; // Keep track of the number of interactions
 
         println("Starting auto-dialog sequence.");
