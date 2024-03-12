@@ -12,6 +12,7 @@ import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
 import net.botwithus.rs3.game.queries.results.ResultSet;
 import net.botwithus.rs3.game.scene.entities.characters.npc.Npc;
 import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
+import net.botwithus.rs3.game.scene.entities.characters.player.Player;
 import net.botwithus.rs3.game.scene.entities.object.SceneObject;
 import net.botwithus.rs3.game.vars.VarManager;
 import net.botwithus.rs3.imgui.NativeInteger;
@@ -54,6 +55,11 @@ public class SkeletonScript extends LoopingScript {
             return;
         }
 
+        Coordinate marker = resolveMarker();
+        if (Movement.traverse(NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.INTRUPPTED) {
+            println("Traversal interrupted");
+        }
+
         /////////////////////////////////////Botstate//////////////////////////
         switch (botState) {
             case IDLE -> {
@@ -67,23 +73,34 @@ public class SkeletonScript extends LoopingScript {
         }
     }
 
-
-    int tileHash = VarManager.getVarValue(VarDomainType.PLAYER, 2807);
-    int x = (tileHash >> 14) & 0x3fff;
-    int y = tileHash & 0x3fff;
-    int z = 0;
-    Coordinate marker = new Coordinate(x, y, z);
-
-    private long GoToMarker() {
-        println(marker);
-        if (Movement.traverse(NavPath.resolve(marker)) == TraverseEvent.State.FINISHED) {
-            println("Traversed to marker");
-            botState = BotState.IDLE;
-        } else {
-                println("Failed to traverse to marker");
-        }
-            return random.nextLong(1000, 3000);
+    public Coordinate resolvePlayerCoords() {
+        Player localPlayer = Client.getLocalPlayer();
+        Coordinate coordinates = localPlayer.getCoordinate();
+        int x = coordinates.getX();
+        int y = coordinates.getY();
+        int z = coordinates.getZ();
+        return new Coordinate(x, y, z);
     }
+
+    public Coordinate resolveMarker() {
+        int tileHash = VarManager.getVarValue(VarDomainType.PLAYER, 2807);
+        int x = (tileHash >> 14) & 0x3fff;
+        int y = tileHash & 0x3fff;
+        int z = (tileHash >> 28) & 0x3;
+        return new Coordinate(x, y, z);
+    }
+
+        private long GoToMarker() {
+            Coordinate marker = resolveMarker();
+            println(marker);
+            if (Movement.traverse(NavPath.resolve(marker)) == TraverseEvent.State.FINISHED) {
+                println("Traversed to marker");
+                botState = BotState.IDLE;
+            } else {
+                println("Failed to traverse to marker");
+            }
+            return random.nextLong(1000, 3000);
+        }
 
 
     ////////////////////Botstate/////////////////////
@@ -94,5 +111,4 @@ public class SkeletonScript extends LoopingScript {
     public void setBotState(BotState botState) {
         this.botState = botState;
     }
-
 }
