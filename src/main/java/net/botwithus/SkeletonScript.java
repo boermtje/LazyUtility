@@ -35,6 +35,7 @@ public class SkeletonScript extends LoopingScript {
         //define your own states here
         IDLE,
         GOTOMARKER,
+        AUTODIALOG,
 
         //...
     }
@@ -53,11 +54,6 @@ public class SkeletonScript extends LoopingScript {
             //wait some time so we dont immediately start on login.
             Execution.delay(random.nextLong(3000, 7000));
             return;
-        }
-
-        Coordinate marker = resolveMarker();
-        if (Movement.traverse(NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.INTRUPPTED) {
-            println("Traversal interrupted");
         }
 
         /////////////////////////////////////Botstate//////////////////////////
@@ -93,10 +89,11 @@ public class SkeletonScript extends LoopingScript {
         private long GoToMarker() {
             Coordinate marker = resolveMarker();
             println(marker);
-            if (Movement.traverse(NavPath.resolve(marker)) == TraverseEvent.State.FINISHED) {
+            if (Movement.traverse(NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
                 println("Traversed to marker");
                 botState = BotState.IDLE;
-            } else {
+            }
+            else {
                 println("Failed to traverse to marker");
             }
             return random.nextLong(1000, 3000);
