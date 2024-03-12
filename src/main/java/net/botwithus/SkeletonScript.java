@@ -77,7 +77,7 @@ public class SkeletonScript extends LoopingScript {
                 Execution.delay(GoToMarker());
             }
             case AUTODIALOG -> {
-                Execution.delay(AutoDialog());
+                Execution.delay(handleDialogInteraction());
             }
         }
     }
@@ -100,58 +100,55 @@ public class SkeletonScript extends LoopingScript {
     }
 
     private long AutoDialog() {
-        int[] dialogOptions = getDialogOptions(); // Retrieve dialog options
-        int interactionCount = 0;
-        long startTime = System.currentTimeMillis(); // Record the start time
-        long timeout = 10000; // 10 seconds timeout
+        println("Entered AutoDialog method.");
 
-        println("Starting auto-dialog sequence.");
+        // Simple check if Dialog is open
+        if (Dialog.isOpen()) {
+            println("Dialog is open, attempting to select.");
+            Execution.delay(random.nextLong(500, 1000)); // Shorter delay for testing
 
-        while (Dialog.isOpen() && (System.currentTimeMillis() - startTime) < timeout) {
-            println("Attempting to select a dialog option...");
-            Execution.delay(random.nextLong(1000, 1758));
-
-            boolean selectionMade = Dialog.select(); // Select without parameters
+            boolean selectionMade = Dialog.select();
             if (!selectionMade) {
-                println("No more selections could be made.");
-
-                if (interactionCount < dialogOptions.length && dialogOptions[interactionCount] != 0) {
-                    println("Interacting with dialog option: " + dialogOptions[interactionCount]);
-                    Execution.delay(random.nextLong(1000, 1758));
-                    Dialog.interact(String.valueOf(dialogOptions[interactionCount]));
-                    interactionCount++; // Move to next interaction
-                } else {
-                    println("Exiting dialog loop - either all options are exhausted or current option is 0.");
-                    setBotState(BotState.IDLE); // Change state to IDLE
-                    break;
-                }
+                println("No more selections could be made, or Dialog.select() failed.");
+            } else {
+                println("Dialog option selected successfully.");
             }
-
-            // Additional check for dialog closure
-            if (!Dialog.isOpen()) {
-                println("Dialog closed after interaction.");
-                setBotState(BotState.IDLE); // Change state to IDLE
-                break;
-            }
-
-            // Timeout check
-            if ((System.currentTimeMillis() - startTime) >= timeout) {
-                println("AutoDialog timeout reached. Exiting.");
-                setBotState(BotState.IDLE); // Change state to IDLE
-                break;
-            }
+        } else {
+            println("Dialog is not open.");
         }
-
-        // Additional post-loop handling
-        if (!Dialog.isOpen() && interactionCount < dialogOptions.length) {
-            println("Dialog closed unexpectedly. Changing to IDLE state.");
-            setBotState(BotState.IDLE); // Change state to IDLE
-        } else if (!Dialog.isOpen()) {
-            println("Dialog interaction complete. Changing to IDLE state.");
-            setBotState(BotState.IDLE); // Change state to IDLE
-        }
-
+        println("Exiting AutoDialog method, setting bot state to IDLE.");
+        setBotState(BotState.IDLE);
         return random.nextLong(1000, 3000);
+    }
+
+    private long handleDialogInteraction() {
+        // Fetch the available dialog options
+        List<String> availableOptions = Dialog.getOptions();
+        println("Available options: " + availableOptions);
+
+        // Go through the dialog options set by the user and interact accordingly
+        for (int option : dialogOptions) {
+            // If the option number is not 0 and within the range of available options
+            if (option > 0 && option <= availableOptions.size()) {
+                String optionText = availableOptions.get(option - 1); // Adjust for index starting at 0
+                println("Selecting dialog option: " + optionText);
+                Execution.delay(random.nextLong(500, 750)); // Delay to simulate user interaction timing
+                Dialog.interact(optionText); // Interact with the dialog option text
+
+                // Wait for the next set of dialog options to be available, if necessary
+                // You might need to implement a custom method for checking dialog change
+                waitForDialogChange();
+            }
+        }
+        // After handling all dialog interactions, return to IDLE or another appropriate state
+        setBotState(BotState.IDLE);
+        return random.nextLong(1000, 3000); // Return some delay before the next action
+    }
+
+    // Implement waiting for dialog change based on your specific needs, this is just a placeholder
+    private void waitForDialogChange() {
+        Execution.delay(1000); // Wait for 1 second for dialog to update
+        // You may need more sophisticated logic to check if the dialog has updated
     }
 
     private long GoToMarker() {
