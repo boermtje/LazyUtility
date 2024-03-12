@@ -100,52 +100,51 @@ public class SkeletonScript extends LoopingScript {
     }
 
     private long AutoDialog() {
-        int[] dialogOptions = getDialogOptions(); // Assuming 'graphics' is an instance of SkeletonScriptGraphicsContext
-        int interactionCount = 0; // Keep track of the number of interactions
+        int[] dialogOptions = getDialogOptions(); // Retrieve dialog options
+        int interactionCount = 0;
 
         println("Starting auto-dialog sequence.");
 
         while (Dialog.isOpen()) {
             println("Attempting to select a dialog option...");
             Execution.delay(random.nextLong(1000,1758));
-            boolean selectionMade = Dialog.select(); // Call select() without parameters
+
+            boolean selectionMade = Dialog.select(); // Select without parameters
             if (!selectionMade) {
                 println("No more selections could be made.");
-                // When there are no more dialog options to select, interact with the corresponding dialog option
+
                 if (interactionCount < dialogOptions.length && dialogOptions[interactionCount] != 0) {
                     println("Interacting with dialog option: " + dialogOptions[interactionCount]);
+
                     Execution.delay(random.nextLong(1000,1758));
                     Dialog.interact(String.valueOf(dialogOptions[interactionCount]));
-                    interactionCount++; // Move to the next interaction
-                    if (interactionCount >= dialogOptions.length) {
-                        println("All dialog options have been exhausted.");
-                        break; // All dialog options have been exhausted
-                    }
-                    // Ensure the dialog is still open before attempting to select again
-                    if (!Dialog.isOpen()) {
-                        println("Dialog closed after interaction.");
+                    interactionCount++; // Increment interaction count
+
+                    if (interactionCount >= dialogOptions.length || !Dialog.isOpen()) {
+                        println("Dialog closed or all options exhausted. Changing to IDLE state.");
+                        setBotState(BotState.IDLE); // Change bot state to IDLE
                         break;
                     }
+
                     println("Re-selecting after interaction.");
                     Execution.delay(random.nextLong(1000,1758));
-                    Dialog.select(); // Attempt to select the next option after interaction
+                    Dialog.select(); // Attempt next selection
                 } else {
-                    // All dialog options have been exhausted or are set to 0, exit the loop
                     println("Exiting dialog loop - either all options are exhausted or the current option is 0.");
+                    setBotState(BotState.IDLE); // Change bot state to IDLE
                     break;
                 }
             }
         }
 
         if (!Dialog.isOpen()) {
-            // Dialog interaction finished or was never open, return to regular processing
-            println("Dialog interaction has finished or was never open. Setting bot state to IDLE.");
-            setBotState(BotState.IDLE); // Or another appropriate state
+            println("Dialog interaction has finished or was never open. Changing to IDLE state.");
+            setBotState(BotState.IDLE); // Change bot state to IDLE
         } else {
             println("Dialog interaction complete.");
         }
 
-        return random.nextLong(1000, 3000); // Return some delay before the next action
+        return random.nextLong(1000, 3000);
     }
 
     private long GoToMarker() {
