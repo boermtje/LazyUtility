@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
 
-    private int[] dialogOptions = new int[9];
+    public int[] dialogOptions = new int[9];
     private SkeletonScript script;
 
     public SkeletonScriptGraphicsContext(ScriptConsole scriptConsole, SkeletonScript script) {
@@ -81,8 +81,8 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
         }
 
     // Call this method to get the options selected by the user
-    public int[] getDialogOptions() {
-        return dialogOptions;
+    public void updateDialogOptionsInScript() {
+        script.setDialogOptions(dialogOptions);
     }
 
     @Override
