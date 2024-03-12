@@ -7,23 +7,13 @@ import net.botwithus.rs3.game.js5.types.vars.VarDomainType;
 import net.botwithus.rs3.game.movement.Movement;
 import net.botwithus.rs3.game.movement.NavPath;
 import net.botwithus.rs3.game.movement.TraverseEvent;
-import net.botwithus.rs3.game.queries.builders.characters.NpcQuery;
-import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
-import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
-import net.botwithus.rs3.game.queries.results.ResultSet;
-import net.botwithus.rs3.game.scene.entities.characters.npc.Npc;
 import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 import net.botwithus.rs3.game.scene.entities.characters.player.Player;
-import net.botwithus.rs3.game.scene.entities.object.SceneObject;
 import net.botwithus.rs3.game.vars.VarManager;
-import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.config.ScriptConfig;
-import net.botwithus.rs3.game.Area;
 import net.botwithus.rs3.game.Coordinate;
-import net.botwithus.rs3.game.*;
-import net.botwithus.rs3.util.RandomGenerator;
 import java.util.*;
 
 public class SkeletonScript extends LoopingScript {

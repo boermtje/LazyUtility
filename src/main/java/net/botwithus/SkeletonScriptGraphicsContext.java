@@ -1,10 +1,12 @@
 package net.botwithus;
 
+import net.botwithus.rs3.game.Coordinate;
 import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.imgui.ImGuiWindowFlag;
 import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
+import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
         script.gotoY = yInput.get();
         script.gotoZ = zInput.get();
     }
+
     // Single-element arrays to hold integer values for ImGui input
     private String xInputText = "0";
     private String yInputText = "0";
@@ -88,6 +91,22 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             savedLocations.put(saveName, new int[]{xInput.get(), yInput.get(), zInput.get()});
                             saveName = ""; // Reset save name for next input
                         }
+                        ImGui.SameLine();
+                        if (ImGui.Button("Save Current Location")) {
+                            // Get the local player's coordinates from the script
+                            Coordinate coordinates = script.resolvePlayerCoords(); // Assumes a method in your script that returns the player's current coordinates
+                            if (coordinates != null) {
+                                int x = coordinates.getX();
+                                int y = coordinates.getY();
+                                int z = coordinates.getZ();
+                                savedLocations.put(saveName.toString(), new int[]{x, y, z}); // Assuming saveName is a StringBuilder or String
+                            }
+                        }
+
+                        if (ImGui.Button("Clear")) {
+                            // Clear the saved locations
+                            savedLocations.clear(saveName);
+                        }
 
                         int count = 0;
                         // List saved locations as buttons
@@ -97,13 +116,17 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             }
                             if (ImGui.Button(entry.getKey())) {
                                 // Handle the "Go To" action in the script with the saved coordinates
-                                script.resolveXYZ();
+                                int[] coords = entry.getValue();
+                                script.gotoX = coords[0];
+                                script.gotoY = coords[1];
+                                script.gotoZ = coords[2];
                                 script.setBotState(SkeletonScript.BotState.GOTOXYZ);
                             }
                             count++;
                         }
                         ImGui.EndTabItem();
                     }
+
 
 
 
