@@ -72,6 +72,8 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
 
                             dialogOptions[i] = dialogOption; // Update the actual array with the new value
                         }
+                        // Update the script's dialogOptions with the changes made through the GUI
+                        updateDialogOptionsInScript();
                         ImGui.EndTabItem();
                     }
                     ImGui.EndTabBar();
