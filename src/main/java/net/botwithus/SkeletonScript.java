@@ -49,6 +49,7 @@ public class SkeletonScript extends LoopingScript {
 
     public SkeletonScript(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(s, scriptConfig, scriptDefinition);
+        this.isBackgroundScript = true;
         this.sgc = new SkeletonScriptGraphicsContext(getConsole(), this);
         this.savedLocations = new HashMap<>(); // Initialize the map
         loadConfiguration(); // Load configuration when the script starts
