@@ -247,6 +247,7 @@ public class SkeletonScript extends LoopingScript {
                     int y = Integer.parseInt(coords[1]);
                     int z = Integer.parseInt(coords[2]);
                     savedLocations.put(name, new int[]{x, y, z});
+                    getSavedLocationsForGraphicsContext();
                 }
                 println("Configuration loaded successfully.");
             }

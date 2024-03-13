@@ -123,7 +123,12 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                                     ImGui.SameLine();
                                 }
                                 if (ImGui.Button(entry.getKey())) {
-                                    // Handle the "Go To" action with the saved coordinates...
+                                    // Handle the "Go To" action in the script with the saved coordinates
+                                    int[] coords = entry.getValue();
+                                    script.gotoX = coords[0];
+                                    script.gotoY = coords[1];
+                                    script.gotoZ = coords[2];
+                                    script.setBotState(SkeletonScript.BotState.GOTOXYZ);
                                 }
                                 count++;
                             }
