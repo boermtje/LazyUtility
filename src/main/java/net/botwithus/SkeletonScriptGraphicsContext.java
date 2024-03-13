@@ -64,8 +64,10 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             //has been clicked
                             script.setBotState(SkeletonScript.BotState.IDLE);
                         }
+                        ImGui.Separator();
                         ImGui.Text("Marker " + script.resolveMarker());
                         ImGui.Text("Player " + script.resolvePlayerCoords());
+                        ImGui.Separator();
 
 
 
@@ -94,6 +96,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             // Handle invalid number formats
                             System.err.println("Invalid input: X, Y, and Z values must be integers.");
                         }
+                        ImGui.Separator();
 
                         // Save functionality
                         saveName = ImGui.InputText("Name", saveName);
@@ -116,7 +119,23 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                                 updateSavedLocations(saveName, x, y, z); // Update and save the location
                             }
                         }
-
+                        ImGui.SameLine();
+                        // New Delete Location button
+                        if (ImGui.Button("Delete Location")) {
+                            // Check if the name exists in saved locations
+                            if (script.getSavedLocations().containsKey(saveName)) {
+                                // Remove the location from the map
+                                script.getSavedLocations().remove(saveName);
+                                // Update the configuration to reflect this change
+                                script.saveConfiguration();
+                                // Optionally, clear the input field or notify the user
+                                System.out.println("Deleted location: " + saveName);
+                                saveName = "";
+                            } else {
+                                System.err.println("No location found with name: " + saveName);
+                            }
+                        }
+                        ImGui.Separator();
                             int count = 0;
                             for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
                                 if (count % 3 != 0) {
