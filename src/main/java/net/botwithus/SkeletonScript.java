@@ -14,12 +14,16 @@ import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.game.Coordinate;
+import net.botwithus.SkeletonScriptGraphicsContext;
 
 import java.lang.reflect.Type;
 import java.util.*;
 
 public class SkeletonScript extends LoopingScript {
 
+    public Map<String, int[]> getSavedLocationsForGraphicsContext() {
+        return savedLocations;
+    }
     private Map<String, int[]> savedLocations = new HashMap<>();
     public int gotoX, gotoY, gotoZ;
     private int[] dialogOptions; // Add this field

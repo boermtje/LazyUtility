@@ -12,6 +12,10 @@ import java.util.Map;
 
 public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
 
+    public void updateFromScript() {
+        this.savedLocations = script.getSavedLocationsForGraphicsContext();
+    }
+
     private void updateSavedLocations(String name, int x, int y, int z) {
         Map<String, int[]> savedLocations = script.getSavedLocations();
         savedLocations.put(name, new int[]{x, y, z});
@@ -46,6 +50,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
 
         @Override
         public void drawSettings () {
+            updateFromScript();
             if (ImGui.Begin("LazyUtility", ImGuiWindowFlag.None.getValue())) {
                 if (ImGui.BeginTabBar("My bar", ImGuiWindowFlag.None.getValue())) {
                     if (ImGui.BeginTabItem("Navigator", ImGuiWindowFlag.None.getValue())) {
@@ -112,22 +117,16 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             }
                         }
 
-                        int count = 0;
-                        // List saved locations as buttons
-                        for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
-                            if (count % 3 != 0) {
-                                ImGui.SameLine();
+                            int count = 0;
+                            for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
+                                if (count % 3 != 0) {
+                                    ImGui.SameLine();
+                                }
+                                if (ImGui.Button(entry.getKey())) {
+                                    // Handle the "Go To" action with the saved coordinates...
+                                }
+                                count++;
                             }
-                            if (ImGui.Button(entry.getKey())) {
-                                // Handle the "Go To" action in the script with the saved coordinates
-                                int[] coords = entry.getValue();
-                                script.gotoX = coords[0];
-                                script.gotoY = coords[1];
-                                script.gotoZ = coords[2];
-                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
-                            }
-                            count++;
-                        }
                         ImGui.EndTabItem();
                     }
 
