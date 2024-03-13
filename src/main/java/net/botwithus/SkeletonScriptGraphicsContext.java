@@ -6,12 +6,20 @@ import net.botwithus.rs3.imgui.ImGuiWindowFlag;
 import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
+import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
+
+    private void updateSavedLocations(String name, int x, int y, int z) {
+        Map<String, int[]> savedLocations = script.getSavedLocations();
+        savedLocations.put(name, new int[]{x, y, z});
+        script.setSavedLocations(savedLocations);
+        script.saveConfiguration(); // Save configuration after updating
+    }
 
     public void updateXYZCoordinates() {
         script.gotoX = xInput.get();
@@ -88,8 +96,10 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                         saveName = ImGui.InputText("Name", saveName);
                         if (ImGui.Button("Save")) {
                             // Save the current XYZ inputs with the provided name
-                            savedLocations.put(saveName, new int[]{xInput.get(), yInput.get(), zInput.get()});
-                            saveName = ""; // Reset save name for next input
+                            int x = xInput.get();
+                            int y = yInput.get();
+                            int z = zInput.get();
+                            updateSavedLocations(saveName, x, y, z); // Update and save the location
                         }
                         ImGui.SameLine();
                         if (ImGui.Button("Save Current Location")) {
@@ -99,13 +109,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                                 int x = coordinates.getX();
                                 int y = coordinates.getY();
                                 int z = coordinates.getZ();
-                                savedLocations.put(saveName.toString(), new int[]{x, y, z}); // Assuming saveName is a StringBuilder or String
+                                savedLocations.put(saveName.toString(), new int[]{x, y, z});
+                                updateSavedLocations(saveName, x, y, z); // Update and save the location
                             }
-                        }
-
-                        if (ImGui.Button("Clear")) {
-                            // Clear the saved locations
-                            savedLocations.clear(saveName);
                         }
 
                         int count = 0;

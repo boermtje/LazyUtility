@@ -1,5 +1,7 @@
 package net.botwithus;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import net.botwithus.api.game.hud.Dialog;
 import net.botwithus.internal.scripts.ScriptDefinition;
 import net.botwithus.rs3.game.Client;
@@ -14,10 +16,13 @@ import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.game.Coordinate;
+
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class SkeletonScript extends LoopingScript {
 
+    private Map<String, int[]> savedLocations = new HashMap<>();
     public int gotoX, gotoY, gotoZ;
     private int[] dialogOptions; // Add this field
 
@@ -45,6 +50,8 @@ public class SkeletonScript extends LoopingScript {
     public SkeletonScript(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(s, scriptConfig, scriptDefinition);
         this.sgc = new SkeletonScriptGraphicsContext(getConsole(), this);
+        this.savedLocations = new HashMap<>(); // Initialize the map
+        loadConfiguration(); // Load configuration when the script starts
     }
 
     @Override
@@ -213,6 +220,46 @@ public class SkeletonScript extends LoopingScript {
             println("Failed to traverse to marker");
         }
         return random.nextLong(1000, 3000);
+    }
+
+    // Add getters and setters for savedLocations
+    public Map<String, int[]> getSavedLocations() {
+        return savedLocations;
+    }
+
+    public void setSavedLocations(Map<String, int[]> savedLocations) {
+        this.savedLocations = savedLocations;
+    }
+
+    ////////////////Save & Load Config/////////////////////
+    void loadConfiguration() {
+        Gson gson = new Gson();
+        try {
+            // ... existing configuration loading code ...
+
+            String savedLocationsJson = configuration.getProperty("savedLocations");
+            if (savedLocationsJson != null && !savedLocationsJson.isEmpty()) {
+                Type type = new TypeToken<HashMap<String, int[]>>(){}.getType();
+                savedLocations = gson.fromJson(savedLocationsJson, type);
+            }
+        } catch (Exception e) {
+            println("Error loading configuration: \n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            println("This is a non-fatal error, you can ignore it.");
+        }
+    }
+
+    void saveConfiguration() {
+        Gson gson = new Gson();
+        try {
+            // ... existing configuration saving code ...
+
+            String savedLocationsJson = gson.toJson(savedLocations);
+            configuration.addProperty("savedLocations", savedLocationsJson);
+            configuration.save();
+        } catch (Exception e) {
+            println("Error saving configuration: \n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            println("This is a non-fatal error, you can ignore it.");
+        }
     }
 
 
