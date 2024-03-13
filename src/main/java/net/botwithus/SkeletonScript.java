@@ -1,7 +1,5 @@
 package net.botwithus;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import net.botwithus.api.game.hud.Dialog;
 import net.botwithus.internal.scripts.ScriptDefinition;
 import net.botwithus.rs3.game.Client;
@@ -233,14 +231,20 @@ public class SkeletonScript extends LoopingScript {
 
     ////////////////Save & Load Config/////////////////////
     void loadConfiguration() {
-        Gson gson = new Gson();
         try {
-            // ... existing configuration loading code ...
-
-            String savedLocationsJson = configuration.getProperty("savedLocations");
-            if (savedLocationsJson != null && !savedLocationsJson.isEmpty()) {
-                Type type = new TypeToken<HashMap<String, int[]>>(){}.getType();
-                savedLocations = gson.fromJson(savedLocationsJson, type);
+            String savedLocationsString = configuration.getProperty("savedLocations");
+            if (savedLocationsString != null && !savedLocationsString.isEmpty()) {
+                String[] locations = savedLocationsString.split(";");
+                for (String location : locations) {
+                    String[] parts = location.split(":");
+                    String name = parts[0];
+                    String[] coords = parts[1].split(",");
+                    int x = Integer.parseInt(coords[0]);
+                    int y = Integer.parseInt(coords[1]);
+                    int z = Integer.parseInt(coords[2]);
+                    savedLocations.put(name, new int[]{x, y, z});
+                }
+                println("Configuration loaded successfully.");
             }
         } catch (Exception e) {
             println("Error loading configuration: \n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
@@ -249,13 +253,19 @@ public class SkeletonScript extends LoopingScript {
     }
 
     void saveConfiguration() {
-        Gson gson = new Gson();
         try {
-            // ... existing configuration saving code ...
+            StringBuilder locationsBuilder = new StringBuilder();
+            for (Map.Entry<String, int[]> entry : savedLocations.entrySet()) {
+                locationsBuilder.append(entry.getKey())
+                        .append(":")
+                        .append(entry.getValue()[0]).append(",")
+                        .append(entry.getValue()[1]).append(",")
+                        .append(entry.getValue()[2]).append(";");
+            }
 
-            String savedLocationsJson = gson.toJson(savedLocations);
-            configuration.addProperty("savedLocations", savedLocationsJson);
+            configuration.addProperty("savedLocations", locationsBuilder.toString());
             configuration.save();
+            println("Configuration saved successfully.");
         } catch (Exception e) {
             println("Error saving configuration: \n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             println("This is a non-fatal error, you can ignore it.");

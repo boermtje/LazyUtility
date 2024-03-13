@@ -6,8 +6,6 @@ import net.botwithus.rs3.imgui.ImGuiWindowFlag;
 import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
-import net.botwithus.rs3.script.config.ScriptConfig;
-import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 
 import java.util.HashMap;
 import java.util.Map;
