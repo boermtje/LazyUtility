@@ -116,6 +116,7 @@ public class LazyUtility extends LoopingScript {
 
     private long handleGotoXYZ() {
         Coordinate xyz = resolveXYZ();
+        println(xyz.isWalkable());
         if (xyz.isWalkable()); {
             println("Navigating to coordinates: " + xyz);
             if (Movement.traverse(NavPath.resolve(xyz).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
@@ -128,6 +129,7 @@ public class LazyUtility extends LoopingScript {
             }
         }
         if (!xyz.isWalkable()); {
+            println("Coordinates are not walkable, finding a walkable coordinate nearby...");
             Area.Rectangular myArea = createExpandedArea(xyz);
             Coordinate Walkable = myArea.getRandomWalkableCoordinate();
             println("Navigating to coordinates: " + Walkable);
@@ -238,12 +240,32 @@ public class LazyUtility extends LoopingScript {
     private long GoToMarker() {
         Coordinate marker = resolveMarker();
         println(marker);
-        if (Movement.traverse(NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
-            println("Traversed to marker");
-            botState = BotState.IDLE;
+        println("coodinate is walkable" + marker.isWalkable());
+        if (marker.isWalkable()); {
+            println("Navigating to coordinates: " + marker);
+            if (Movement.traverse(NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+                println("Traversed to marker");
+                botState = BotState.IDLE;
+            }
+            else {
+                println("Failed to traverse to marker");
+                botState = BotState.IDLE;
+            }
         }
-        else {
-            println("Failed to traverse to marker");
+        if (!marker.isWalkable());
+        {
+            println("Coordinates are not walkable, finding a walkable coordinate nearby...");
+            Area.Rectangular myArea = createExpandedArea(marker);
+            Coordinate Walkable = myArea.getRandomWalkableCoordinate();
+            println("Navigating to coordinates: " + Walkable);
+            if (Movement.traverse(NavPath.resolve(Walkable).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+                println("Traversed to marker");
+                botState = BotState.IDLE;
+            }
+            else {
+                println("Failed to traverse to marker");
+                botState = BotState.IDLE;
+            }
         }
         return random.nextLong(1000, 3000);
     }
