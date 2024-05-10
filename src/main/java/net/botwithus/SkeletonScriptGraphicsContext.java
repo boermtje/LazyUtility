@@ -40,9 +40,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
     private NativeInteger zInput = new NativeInteger(0);
     private Map<String, int[]> savedLocations = new HashMap<>(); // Map to store named locations
     public int[] dialogOptions = new int[9];
-    private SkeletonScript script;
+    private LazyUtility script;
 
-    public SkeletonScriptGraphicsContext(ScriptConsole scriptConsole, SkeletonScript script) {
+    public SkeletonScriptGraphicsContext(ScriptConsole scriptConsole, LazyUtility script) {
         super(scriptConsole);
         this.script = script;
         // Initialize arrays with current values
@@ -57,12 +57,12 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                         ImGui.Text("My scripts state is: " + script.getBotState());
                         if (ImGui.Button("Go to marker")) {
                             //button has been clicked
-                            script.setBotState(SkeletonScript.BotState.GOTOMARKER);
+                            script.setBotState(LazyUtility.BotState.GOTOMARKER);
                         }
                         ImGui.SameLine();
                         if (ImGui.Button("Interrupt Traversal")) {
                             //has been clicked
-                            script.setBotState(SkeletonScript.BotState.IDLE);
+                            script.setBotState(LazyUtility.BotState.IDLE);
                         }
                         ImGui.Separator();
                         ImGui.Text("Marker " + script.resolveMarker());
@@ -90,7 +90,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             // "Go To" button logic
                             if (ImGui.Button("Go To X,Y,Z")) {
                                 updateXYZCoordinates();
-                                script.setBotState(SkeletonScript.BotState.GOTOXYZ);
+                                script.setBotState(LazyUtility.BotState.GOTOXYZ);
                             }
                         } catch (NumberFormatException e) {
                             // Handle invalid number formats
@@ -147,7 +147,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                                     script.gotoX = coords[0];
                                     script.gotoY = coords[1];
                                     script.gotoZ = coords[2];
-                                    script.setBotState(SkeletonScript.BotState.GOTOXYZ);
+                                    script.setBotState(LazyUtility.BotState.GOTOXYZ);
                                 }
                                 count++;
                             }
@@ -161,12 +161,12 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                         ImGui.Text("My scripts state is: " + script.getBotState());
                         if (ImGui.Button("Auto Dialog")) {
                             //has been clicked
-                            script.setBotState(SkeletonScript.BotState.AUTODIALOG);
+                            script.setBotState(LazyUtility.BotState.AUTODIALOG);
                         }
                         ImGui.SameLine();
                         if (ImGui.Button("Stop")) {
                             //has been clicked
-                            script.setBotState(SkeletonScript.BotState.IDLE);
+                            script.setBotState(LazyUtility.BotState.IDLE);
                         }
                         for (int i = 0; i < dialogOptions.length; i++) {
                             int dialogOption = dialogOptions[i]; // Temp copy for modification

@@ -2,6 +2,7 @@ package net.botwithus;
 
 import net.botwithus.api.game.hud.Dialog;
 import net.botwithus.internal.scripts.ScriptDefinition;
+import net.botwithus.rs3.game.Area;
 import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.js5.types.vars.VarDomainType;
 import net.botwithus.rs3.game.movement.Movement;
@@ -17,7 +18,7 @@ import net.botwithus.rs3.game.Coordinate;
 
 import java.util.*;
 
-public class SkeletonScript extends LoopingScript {
+public class LazyUtility extends LoopingScript {
 
     public Map<String, int[]> getSavedLocationsForGraphicsContext() {
         return savedLocations;
@@ -47,7 +48,7 @@ public class SkeletonScript extends LoopingScript {
         //...
     }
 
-    public SkeletonScript(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
+    public LazyUtility(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(s, scriptConfig, scriptDefinition);
         this.sgc = new SkeletonScriptGraphicsContext(getConsole(), this);
         this.savedLocations = new HashMap<>(); // Initialize the map
@@ -104,16 +105,40 @@ public class SkeletonScript extends LoopingScript {
         return new Coordinate(gotoX, gotoY, gotoZ);
     }
 
+    private Area.Rectangular createExpandedArea(Coordinate center) {
+        // Calculate the corners by adding and subtracting 5 from the center's x and y coordinates
+        Coordinate bottomLeft = new Coordinate(center.getX() - 5, center.getY() - 5, center.getZ());
+        Coordinate topRight = new Coordinate(center.getX() + 5, center.getY() + 5, center.getZ());
+
+        // Create and return a new rectangular area defined by the two corners
+        return new Area.Rectangular(bottomLeft, topRight);
+    }
+
     private long handleGotoXYZ() {
         Coordinate xyz = resolveXYZ();
-        println("Navigating to coordinates: " + xyz);
-        if (Movement.traverse(NavPath.resolve(xyz).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
-            println("Traversed to XYZ");
-            botState = BotState.IDLE;
+        if (xyz.isWalkable()); {
+            println("Navigating to coordinates: " + xyz);
+            if (Movement.traverse(NavPath.resolve(xyz).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+                println("Traversed to XYZ");
+                botState = BotState.IDLE;
+            }
+            else {
+                print(xyz);
+                println("Failed to traverse to XYZ");
+            }
         }
-        else {
-            print(xyz);
-            println("Failed to traverse to XYZ");
+        if (!xyz.isWalkable()); {
+            Area.Rectangular myArea = createExpandedArea(xyz);
+            Coordinate Walkable = myArea.getRandomWalkableCoordinate();
+            println("Navigating to coordinates: " + Walkable);
+            if (Movement.traverse(NavPath.resolve(xyz).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+                println("Traversed to XYZ");
+                botState = BotState.IDLE;
+            }
+            else {
+                print(xyz);
+                println("Failed to traverse to XYZ");
+            }
         }
         return random.nextLong(1000, 3000);
     }
@@ -184,6 +209,7 @@ public class SkeletonScript extends LoopingScript {
 
         return random.nextLong(1000, 3000);
     }
+
 
 
     private boolean interactWithOptionNumber(int optionNumber) {
