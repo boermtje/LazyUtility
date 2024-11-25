@@ -13,6 +13,7 @@ import net.botwithus.rs3.game.scene.entities.characters.player.Player;
 import net.botwithus.rs3.game.vars.VarManager;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
+import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.game.Coordinate;
 
@@ -117,9 +118,14 @@ public class LazyUtility extends LoopingScript {
     private long handleGotoXYZ() {
         Coordinate xyz = resolveXYZ();
         println(xyz.isWalkable());
+        int flags = 0;
+        if (!SkeletonScriptGraphicsContext.useTeleports) {
+            flags |= Movement.DISABLE_TELEPORTS;
+            ScriptConsole.println("Teleports disabled for navigation");
+        }
         if (xyz.isWalkable()); {
             println("Navigating to coordinates: " + xyz);
-            if (Movement.traverse(NavPath.resolve(xyz).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+            if (Movement.traverse(NavPath.resolve(xyz, flags).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
                 println("Traversed to XYZ");
                 botState = BotState.IDLE;
             }
@@ -133,7 +139,7 @@ public class LazyUtility extends LoopingScript {
             Area.Rectangular myArea = createExpandedArea(xyz);
             Coordinate Walkable = myArea.getRandomWalkableCoordinate();
             println("Navigating to coordinates: " + Walkable);
-            if (Movement.traverse(NavPath.resolve(xyz).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+            if (Movement.traverse(NavPath.resolve(xyz, flags).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
                 println("Traversed to XYZ");
                 botState = BotState.IDLE;
             }

@@ -41,6 +41,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
     private Map<String, int[]> savedLocations = new HashMap<>(); // Map to store named locations
     public int[] dialogOptions = new int[9];
     private LazyUtility script;
+    public static boolean useTeleports = false;
 
     public SkeletonScriptGraphicsContext(ScriptConsole scriptConsole, LazyUtility script) {
         super(scriptConsole);
@@ -67,6 +68,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                         ImGui.Separator();
                         ImGui.Text("Marker " + script.resolveMarker());
                         ImGui.Text("Player " + script.resolvePlayerCoords());
+                        useTeleports = ImGui.Checkbox("Use Teleports", useTeleports);
                         ImGui.Separator();
 
 
