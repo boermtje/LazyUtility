@@ -3,7 +3,6 @@ package net.botwithus;
 import net.botwithus.rs3.game.Coordinate;
 import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.imgui.ImGuiWindowFlag;
-import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
 
@@ -24,9 +23,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
     }
 
     public void updateXYZCoordinates() {
-        script.gotoX = xInput.get();
-        script.gotoY = yInput.get();
-        script.gotoZ = zInput.get();
+        script.gotoX = xInput;
+        script.gotoY = yInput;
+        script.gotoZ = zInput;
     }
 
     // Single-element arrays to hold integer values for ImGui input
@@ -35,9 +34,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
     private String zInputText = "0";
     private String saveName = "SaveName";
     // New fields for storing XYZ coordinates and saved locations
-    private NativeInteger xInput = new NativeInteger(0);
-    private NativeInteger yInput = new NativeInteger(0);
-    private NativeInteger zInput = new NativeInteger(0);
+    private int xInput = 0;
+    private int yInput = 0;
+    private int zInput = 0;
     private Map<String, int[]> savedLocations = new HashMap<>(); // Map to store named locations
     public int[] dialogOptions = new int[9];
     private LazyUtility script;
@@ -68,7 +67,7 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                         ImGui.Separator();
                         ImGui.Text("Marker " + script.resolveMarker());
                         ImGui.Text("Player " + script.resolvePlayerCoords());
-                        useTeleports = ImGui.Checkbox("Use Teleports", useTeleports);
+                        useTeleports = ImGui.Checkbox("Disable Teleports", useTeleports);
                         ImGui.Separator();
 
 
@@ -85,9 +84,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                             int z = Integer.parseInt(zInputText);
 
                             // Update the NativeInteger fields
-                            xInput.set(x);
-                            yInput.set(y);
-                            zInput.set(z);
+                            xInput = x;
+                            yInput = y;
+                            zInput = z;
 
                             // "Go To" button logic
                             if (ImGui.Button("Go To X,Y,Z")) {
@@ -104,9 +103,9 @@ public class SkeletonScriptGraphicsContext extends ScriptGraphicsContext {
                         saveName = ImGui.InputText("Name", saveName);
                         if (ImGui.Button("Save")) {
                             // Save the current XYZ inputs with the provided name
-                            int x = xInput.get();
-                            int y = yInput.get();
-                            int z = zInput.get();
+                            int x = xInput;
+                            int y = yInput;
+                            int z = zInput;
                             updateSavedLocations(saveName, x, y, z); // Update and save the location
                         }
                         ImGui.SameLine();

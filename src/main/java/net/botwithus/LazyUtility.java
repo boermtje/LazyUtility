@@ -119,7 +119,7 @@ public class LazyUtility extends LoopingScript {
         Coordinate xyz = resolveXYZ();
         println(xyz.isWalkable());
         int flags = 0;
-        if (!SkeletonScriptGraphicsContext.useTeleports) {
+        if (SkeletonScriptGraphicsContext.useTeleports) {
             flags |= Movement.DISABLE_TELEPORTS;
             ScriptConsole.println("Teleports disabled for navigation");
         }
@@ -247,9 +247,14 @@ public class LazyUtility extends LoopingScript {
         Coordinate marker = resolveMarker();
         println(marker);
         println("coodinate is walkable" + marker.isWalkable());
+        int flags = 0;
+        if (SkeletonScriptGraphicsContext.useTeleports) {
+            flags |= Movement.DISABLE_TELEPORTS;
+            ScriptConsole.println("Teleports disabled for navigation");
+        }
         if (marker.isWalkable()); {
             println("Navigating to coordinates: " + marker);
-            if (Movement.traverse(NavPath.resolve(marker).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+            if (Movement.traverse(NavPath.resolve(marker, flags).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
                 println("Traversed to marker");
                 botState = BotState.IDLE;
             }
@@ -264,7 +269,7 @@ public class LazyUtility extends LoopingScript {
             Area.Rectangular myArea = createExpandedArea(marker);
             Coordinate Walkable = myArea.getRandomWalkableCoordinate();
             println("Navigating to coordinates: " + Walkable);
-            if (Movement.traverse(NavPath.resolve(Walkable).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
+            if (Movement.traverse(NavPath.resolve(Walkable, flags).interrupt(event -> botState == BotState.IDLE)) == TraverseEvent.State.FINISHED) {
                 println("Traversed to marker");
                 botState = BotState.IDLE;
             }
